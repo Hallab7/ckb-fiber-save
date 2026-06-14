@@ -1,5 +1,6 @@
 const CKB_DECIMALS = 8;
 const CKB_UNIT = 100_000_000n;
+const DECIMAL_PATTERN = /^\d+(\.\d+)?$/;
 
 export function formatAddress(address: string, prefixLength = 8, suffixLength = 6) {
   if (address.length <= prefixLength + suffixLength) {
@@ -20,4 +21,48 @@ export function shannonsToCkb(shannons: bigint) {
 
 export function formatAssetAmount(amount: string, symbol: string) {
   return `${amount} ${symbol}`;
+}
+
+export function parseAssetAmount(amount: string, decimals = CKB_DECIMALS, allowZero = false) {
+  const normalized = amount.trim();
+
+  if (!DECIMAL_PATTERN.test(normalized)) {
+    throw new Error("Enter a valid amount.");
+  }
+
+  const [whole, fraction = ""] = normalized.split(".");
+
+  if (fraction.length > decimals) {
+    throw new Error(`Use ${decimals} or fewer decimal places.`);
+  }
+
+  const units = `${whole}${fraction.padEnd(decimals, "0")}`;
+  const parsed = BigInt(units);
+
+  if (parsed < 0n || (!allowZero && parsed === 0n)) {
+    throw new Error("Amount must be greater than zero.");
+  }
+
+  return parsed;
+}
+
+export function formatUnits(units: bigint, decimals = CKB_DECIMALS) {
+  const base = 10n ** BigInt(decimals);
+  const whole = units / base;
+  const fraction = units % base;
+  const paddedFraction = fraction.toString().padStart(decimals, "0");
+  const trimmedFraction = paddedFraction.replace(/0+$/, "");
+
+  return trimmedFraction ? `${whole}.${trimmedFraction}` : whole.toString();
+}
+
+export function getGoalProgress(assignedAmount: string, targetAmount: string) {
+  try {
+    const assigned = parseAssetAmount(assignedAmount, CKB_DECIMALS, true);
+    const target = parseAssetAmount(targetAmount);
+
+    return Math.min(100, Number((assigned * 10_000n) / target) / 100);
+  } catch {
+    return 0;
+  }
 }

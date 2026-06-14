@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { ArrowDownLeft, ArrowUpRight, Landmark, PiggyBank, RefreshCw, Wallet } from "lucide-react";
 import { useSigner } from "@ckb-ccc/connector-react";
 
@@ -184,14 +185,20 @@ export function FiberSaveDashboard() {
               <p className="text-sm text-[#6b6254]">Total visible balance</p>
               <p className="mt-2 text-3xl font-semibold">{totalLabel}</p>
               <div className="mt-5 grid grid-cols-2 gap-2">
-                <button className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#17594a] px-3 text-sm font-medium text-white">
+                <Link
+                  href="/goals/new"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#17594a] px-3 text-sm font-medium text-white"
+                >
                   <ArrowDownLeft size={16} aria-hidden="true" />
-                  Deposit
-                </button>
-                <button className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d9d2c4] px-3 text-sm font-medium text-[#374151]">
+                  New Goal
+                </Link>
+                <Link
+                  href="/goals"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d9d2c4] px-3 text-sm font-medium text-[#374151]"
+                >
                   <ArrowUpRight size={16} aria-hidden="true" />
-                  Withdraw
-                </button>
+                  View Goals
+                </Link>
               </div>
             </div>
 
