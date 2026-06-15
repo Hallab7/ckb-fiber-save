@@ -6,6 +6,7 @@ import { Archive, ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { useSigner } from "@ckb-ccc/connector-react";
 
 import { assignFundsToGoal, removeFundsFromGoal } from "@/lib/goal-actions";
+import { addActivity } from "@/lib/activity-store";
 import { archiveGoal, getGoal } from "@/lib/goal-store";
 import { formatAssetAmount, getGoalProgress } from "@/lib/format";
 import { getConnectedAddress } from "@/lib/wallet";
@@ -70,6 +71,15 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
         amount: assignAmount,
       });
 
+      await addActivity({
+        ownerAddress: address,
+        type: "goal_assignment",
+        asset: goal.asset,
+        amount: assignAmount,
+        status: "complete",
+        description: `Assigned funds to ${goal.name}`,
+      });
+
       setAssignAmount("");
       await reloadGoal();
     } catch (err) {
@@ -91,6 +101,15 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
         goalId: goal.id,
         asset: goal.asset,
         amount: removeAmount,
+      });
+
+      await addActivity({
+        ownerAddress: address,
+        type: "goal_withdrawal",
+        asset: goal.asset,
+        amount: removeAmount,
+        status: "complete",
+        description: `Removed funds from ${goal.name}`,
       });
 
       setRemoveAmount("");

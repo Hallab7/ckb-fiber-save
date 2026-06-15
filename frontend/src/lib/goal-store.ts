@@ -104,3 +104,12 @@ export async function updateGoal(
 export async function archiveGoal(goalId: string): Promise<void> {
   await updateGoal(goalId, { status: "archived" });
 }
+
+export async function clearGoals(ownerAddress?: string): Promise<void> {
+  if (!ownerAddress) {
+    writeGoals([]);
+    return;
+  }
+
+  writeGoals(readGoals().filter((goal) => goal.ownerAddress !== ownerAddress));
+}

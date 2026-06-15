@@ -2,26 +2,23 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { ccc } from "@ckb-ccc/core";
 import { useSigner } from "@ckb-ccc/connector-react";
 
 import { ConnectWalletButton } from "@/components/connect-wallet-button";
-import { createGoal } from "@/lib/goal-store";
 import { addActivity } from "@/lib/activity-store";
 import { parseAssetAmount } from "@/lib/format";
 import { getConnectedAddress } from "@/lib/wallet";
 import type { AssetType } from "@/types/fibersave";
 
-const assetOptions: AssetType[] = ["CKB", "RGB_STABLE", "BTC"];
-
-export function NewGoalPageClient() {
-  const router = useRouter();
+export function WithdrawPageClient() {
   const signer = useSigner();
   const [address, setAddress] = useState<string | null>(null);
-  const [name, setName] = useState("");
+  const [recipient, setRecipient] = useState("");
   const [asset, setAsset] = useState<AssetType>("CKB");
-  const [targetAmount, setTargetAmount] = useState("");
-  const [targetDate, setTargetDate] = useState("");
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,47 +44,38 @@ export function NewGoalPageClient() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setStatus(null);
 
     try {
-      if (!address) {
-        throw new Error("Connect a wallet before creating a goal.");
+      if (!address || !signer) {
+        throw new Error("Connect a wallet before preparing a withdrawal.");
       }
 
-      if (!name.trim()) {
-        throw new Error("Goal name is required.");
+      parseAssetAmount(amount);
+
+      if (asset !== "CKB") {
+        throw new Error("Only CKB withdrawal preparation is available in this MVP.");
       }
 
-      parseAssetAmount(targetAmount);
-
-      if (targetDate) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        if (new Date(targetDate) < today) {
-          throw new Error("Target date cannot be in the past.");
-        }
-      }
-
-      const goal = await createGoal({
-        ownerAddress: address,
-        name,
-        asset,
-        targetAmount,
-        targetDate,
-      });
+      await ccc.Address.fromString(recipient.trim(), signer.client);
 
       await addActivity({
         ownerAddress: address,
-        type: "goal_created",
+        type: "withdrawal",
         asset,
-        amount: targetAmount,
-        status: "complete",
-        description: `Created savings goal: ${goal.name}`,
+        amount,
+        status: "pending",
+        description: note.trim()
+          ? `Prepared withdrawal to ${recipient.trim()}: ${note.trim()}`
+          : `Prepared withdrawal to ${recipient.trim()}`,
       });
 
-      router.push(`/goals/${goal.id}`);
+      setRecipient("");
+      setAmount("");
+      setNote("");
+      setStatus("Withdrawal recorded as pending. Transaction signing will be connected in the testnet integration step.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to create goal.");
+      setError(err instanceof Error ? err.message : "Unable to prepare withdrawal.");
     }
   }
 
@@ -95,7 +83,7 @@ export function NewGoalPageClient() {
     <main className="min-h-screen bg-[#f7f4ee] px-5 py-6 text-[#111827] sm:px-8">
       <section className="mx-auto max-w-3xl">
         <header className="flex items-center justify-between border-b border-[#d9d2c4] pb-5">
-          <Link href="/goals" className="text-lg font-semibold">
+          <Link href="/" className="text-lg font-semibold">
             FiberSave
           </Link>
           <ConnectWalletButton address={address} />
@@ -103,19 +91,22 @@ export function NewGoalPageClient() {
 
         <div className="mt-8">
           <p className="text-sm font-medium uppercase tracking-wide text-[#17594a]">
-            Create goal
+            Withdraw
           </p>
-          <h1 className="mt-2 text-3xl font-semibold">New savings goal</h1>
+          <h1 className="mt-2 text-3xl font-semibold">Prepare withdrawal</h1>
+          <p className="mt-2 text-[#6b7280]">
+            This MVP validates the request and records a pending activity item. Real transaction signing is the next testnet integration step.
+          </p>
         </div>
 
         <form onSubmit={onSubmit} className="mt-6 rounded-lg border border-[#d9d2c4] bg-white p-5 shadow-sm">
           <label className="block">
-            <span className="text-sm font-medium">Goal name</span>
+            <span className="text-sm font-medium">Recipient address</span>
             <input
-              value={name}
-              onChange={(event) => setName(event.target.value)}
+              value={recipient}
+              onChange={(event) => setRecipient(event.target.value)}
               className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] px-3 outline-none focus:border-[#17594a]"
-              placeholder="School fees"
+              placeholder="ckt1..."
             />
           </label>
 
@@ -127,52 +118,39 @@ export function NewGoalPageClient() {
                 onChange={(event) => setAsset(event.target.value as AssetType)}
                 className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] bg-white px-3 outline-none focus:border-[#17594a]"
               >
-                {assetOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
+                <option value="CKB">CKB</option>
+                <option value="RGB_STABLE">RGB_STABLE</option>
+                <option value="BTC">BTC</option>
               </select>
             </label>
-
             <label className="block">
-              <span className="text-sm font-medium">Target amount</span>
+              <span className="text-sm font-medium">Amount</span>
               <input
-                value={targetAmount}
-                onChange={(event) => setTargetAmount(event.target.value)}
+                value={amount}
+                onChange={(event) => setAmount(event.target.value)}
                 className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] px-3 outline-none focus:border-[#17594a]"
                 inputMode="decimal"
-                placeholder="1000"
+                placeholder="100"
               />
             </label>
           </div>
 
           <label className="mt-4 block">
-            <span className="text-sm font-medium">Target date</span>
+            <span className="text-sm font-medium">Note</span>
             <input
-              value={targetDate}
-              onChange={(event) => setTargetDate(event.target.value)}
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
               className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] px-3 outline-none focus:border-[#17594a]"
-              type="date"
+              placeholder="Optional"
             />
           </label>
 
           {error ? <p className="mt-4 text-sm text-[#b42318]">{error}</p> : null}
+          {status ? <p className="mt-4 text-sm text-[#17594a]">{status}</p> : null}
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <button
-              type="submit"
-              className="inline-flex h-11 items-center justify-center rounded-md bg-[#17594a] px-5 text-sm font-medium text-white"
-            >
-              Create Goal
-            </button>
-            <Link
-              href="/goals"
-              className="inline-flex h-11 items-center justify-center rounded-md border border-[#d9d2c4] px-5 text-sm font-medium text-[#374151]"
-            >
-              Cancel
-            </Link>
-          </div>
+          <button className="mt-6 inline-flex h-11 items-center justify-center rounded-md bg-[#17594a] px-5 text-sm font-medium text-white">
+            Prepare Withdrawal
+          </button>
         </form>
       </section>
     </main>

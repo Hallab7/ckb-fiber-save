@@ -2,7 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowDownLeft, ArrowUpRight, Landmark, PiggyBank, RefreshCw, Wallet } from "lucide-react";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  History,
+  Landmark,
+  PiggyBank,
+  RefreshCw,
+  Settings,
+  Wallet,
+} from "lucide-react";
 import { useSigner } from "@ckb-ccc/connector-react";
 
 import { getAllBalances } from "@/lib/balances";
@@ -186,21 +195,43 @@ export function FiberSaveDashboard() {
               <p className="mt-2 text-3xl font-semibold">{totalLabel}</p>
               <div className="mt-5 grid grid-cols-2 gap-2">
                 <Link
-                  href="/goals/new"
+                  href="/deposit"
                   className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#17594a] px-3 text-sm font-medium text-white"
                 >
                   <ArrowDownLeft size={16} aria-hidden="true" />
-                  New Goal
+                  Deposit
+                </Link>
+                <Link
+                  href="/withdraw"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d9d2c4] px-3 text-sm font-medium text-[#374151]"
+                >
+                  <ArrowUpRight size={16} aria-hidden="true" />
+                  Withdraw
                 </Link>
                 <Link
                   href="/goals"
                   className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d9d2c4] px-3 text-sm font-medium text-[#374151]"
                 >
-                  <ArrowUpRight size={16} aria-hidden="true" />
-                  View Goals
+                  <PiggyBank size={16} aria-hidden="true" />
+                  Goals
+                </Link>
+                <Link
+                  href="/activity"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d9d2c4] px-3 text-sm font-medium text-[#374151]"
+                >
+                  <History size={16} aria-hidden="true" />
+                  Activity
                 </Link>
               </div>
             </div>
+
+            <Link
+              href="/settings"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#d9d2c4] bg-white px-4 py-3 text-sm font-medium text-[#374151] shadow-sm"
+            >
+              <Settings size={16} aria-hidden="true" />
+              Settings
+            </Link>
 
             <div className="rounded-lg border border-[#d9d2c4] bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between">
