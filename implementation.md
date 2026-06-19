@@ -399,6 +399,11 @@ Goal assignment is metadata only. It does not lock funds. The UI must make the u
 
 ## Phase 4 - Deposits, Withdrawals, and Activity
 
+Implementation status: complete for native CKB on testnet. Deposits use
+balance-delta detection, withdrawals are built and signed through CCC, and
+broadcast transaction activity is reconciled against the CKB node. RGB++ and
+BTC transfers remain deferred until their integration paths are selected.
+
 ### Step 4.1 - Deposit Flow
 
 File: `frontend/app/deposit/page.tsx`

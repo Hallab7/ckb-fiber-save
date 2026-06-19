@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import QRCode from "qrcode";
@@ -9,8 +9,9 @@ import { useSigner } from "@ckb-ccc/connector-react";
 
 import { BalanceCard } from "@/components/balance-card";
 import { ConnectWalletButton } from "@/components/connect-wallet-button";
-import { addActivity, listActivity } from "@/lib/activity-store";
+import { listActivity } from "@/lib/activity-store";
 import { getAllBalances } from "@/lib/balances";
+import { detectCkbDeposit } from "@/lib/deposit-tracker";
 import { getConnectedAddress } from "@/lib/wallet";
 import type { ActivityEvent, AssetBalance } from "@/types/fibersave";
 
@@ -21,44 +22,61 @@ export function DepositPageClient() {
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [activity, setActivity] = useState<ActivityEvent[]>([]);
   const [copied, setCopied] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  async function refresh() {
-    const nextAddress = await getConnectedAddress(signer);
-    const nextBalances = await getAllBalances(signer);
+  const refresh = useCallback(async (showStatus = false) => {
+    setIsRefreshing(true);
+    setError(null);
 
-    setAddress(nextAddress);
-    setBalances(nextBalances);
-    setActivity(nextAddress ? await listActivity(nextAddress) : []);
-    setQrCode(nextAddress ? await QRCode.toDataURL(nextAddress, { margin: 1, width: 220 }) : null);
-  }
-
-  useEffect(() => {
-    let isActive = true;
-
-    async function load() {
+    try {
       const nextAddress = await getConnectedAddress(signer);
       const nextBalances = await getAllBalances(signer);
-      const nextActivity = nextAddress ? await listActivity(nextAddress) : [];
-      const nextQr = nextAddress
-        ? await QRCode.toDataURL(nextAddress, { margin: 1, width: 220 })
-        : null;
+      const ckbBalance = nextBalances.find((balance) => balance.asset === "CKB");
+      const detected =
+        nextAddress && ckbBalance
+          ? await detectCkbDeposit(nextAddress, ckbBalance.amount)
+          : null;
 
-      if (isActive) {
-        setAddress(nextAddress);
-        setBalances(nextBalances);
-        setActivity(nextActivity);
-        setQrCode(nextQr);
+      setAddress(nextAddress);
+      setBalances(nextBalances);
+      setActivity(nextAddress ? await listActivity(nextAddress) : []);
+      setQrCode(
+        nextAddress
+          ? await QRCode.toDataURL(nextAddress, { margin: 1, width: 220 })
+          : null,
+      );
+
+      if (showStatus) {
+        setStatus(
+          detected
+            ? `Detected a deposit of ${detected.amount} CKB.`
+            : "Balance refreshed. No new deposit was detected.",
+        );
       }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to refresh deposit state.");
+    } finally {
+      setIsRefreshing(false);
     }
-
-    queueMicrotask(() => {
-      void load();
-    });
-
-    return () => {
-      isActive = false;
-    };
   }, [signer]);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      void refresh(false);
+    });
+  }, [refresh]);
+
+  useEffect(() => {
+    if (!signer) return;
+
+    const interval = window.setInterval(() => {
+      void refresh(false);
+    }, 30_000);
+
+    return () => window.clearInterval(interval);
+  }, [refresh, signer]);
 
   async function copyAddress() {
     if (!address) {
@@ -68,21 +86,6 @@ export function DepositPageClient() {
     await navigator.clipboard.writeText(address);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1500);
-  }
-
-  async function recordManualDepositCheck() {
-    if (!address) {
-      return;
-    }
-
-    await addActivity({
-      ownerAddress: address,
-      type: "deposit",
-      asset: "CKB",
-      status: "pending",
-      description: "Deposit check requested",
-    });
-    await refresh();
   }
 
   return (
@@ -133,13 +136,16 @@ export function DepositPageClient() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => void recordManualDepositCheck()}
-                      className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d9d2c4] px-4 text-sm font-medium text-[#374151]"
+                      onClick={() => void refresh(true)}
+                      disabled={isRefreshing}
+                      className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d9d2c4] px-4 text-sm font-medium text-[#374151] disabled:opacity-60"
                     >
-                      <RefreshCw size={16} />
-                      Check Deposit
+                      <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
+                      {isRefreshing ? "Checking..." : "Check Deposit"}
                     </button>
                   </div>
+                  {status ? <p className="mt-3 text-sm text-[#17594a]">{status}</p> : null}
+                  {error ? <p className="mt-3 text-sm text-[#b42318]">{error}</p> : null}
                 </div>
               </div>
             )}

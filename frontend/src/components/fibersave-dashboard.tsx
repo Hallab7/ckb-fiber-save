@@ -119,14 +119,14 @@ export function FiberSaveDashboard() {
           <section className="space-y-6">
             <div>
               <p className="mb-3 text-sm font-medium uppercase tracking-wide text-[#17594a]">
-                Phase 2 wallet and balances
+                Phase 4 savings MVP
               </p>
               <h1 className="max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl">
-                Track wallet-controlled savings before adding goals.
+                Save, receive, and withdraw with wallet-controlled funds.
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-7 text-[#4b5563] sm:text-lg">
-                FiberSave now has a wallet connection shell, CKB testnet balance
-                loading, and a stable asset balance interface for RGB++ support.
+                Connect a CKB wallet, track goals, detect deposits, send signed
+                testnet withdrawals, and follow transaction activity.
               </p>
             </div>
 

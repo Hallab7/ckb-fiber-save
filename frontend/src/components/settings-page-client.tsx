@@ -6,13 +6,21 @@ import { useSigner } from "@ckb-ccc/connector-react";
 
 import { ConnectWalletButton } from "@/components/connect-wallet-button";
 import { clearActivity } from "@/lib/activity-store";
+import { clearDepositSnapshots } from "@/lib/deposit-tracker";
 import { clearGoals } from "@/lib/goal-store";
+import {
+  clearPreferences,
+  getPreferredCurrency,
+  setPreferredCurrency as savePreferredCurrency,
+} from "@/lib/preferences";
 import { getConnectedAddress } from "@/lib/wallet";
+import type { WalletProfile } from "@/types/fibersave";
 
 export function SettingsPageClient() {
   const signer = useSigner();
   const [address, setAddress] = useState<string | null>(null);
-  const [preferredCurrency, setPreferredCurrency] = useState("USD");
+  const [preferredCurrency, setPreferredCurrency] =
+    useState<WalletProfile["preferredCurrency"]>("USD");
   const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,6 +31,7 @@ export function SettingsPageClient() {
 
       if (isActive) {
         setAddress(nextAddress);
+        setPreferredCurrency(getPreferredCurrency(nextAddress));
       }
     }
 
@@ -38,7 +47,16 @@ export function SettingsPageClient() {
   async function clearLocalMetadata() {
     await clearGoals(address ?? undefined);
     await clearActivity(address ?? undefined);
+    clearDepositSnapshots(address ?? undefined);
+    clearPreferences(address ?? undefined);
+    setPreferredCurrency("USD");
     setStatus(address ? "Cleared local metadata for this wallet." : "Cleared all local metadata.");
+  }
+
+  function updatePreferredCurrency(currency: WalletProfile["preferredCurrency"]) {
+    setPreferredCurrency(currency);
+    savePreferredCurrency(currency, address);
+    setStatus("Display currency preference saved.");
   }
 
   return (
@@ -68,7 +86,11 @@ export function SettingsPageClient() {
             <h2 className="text-lg font-semibold">Display currency</h2>
             <select
               value={preferredCurrency}
-              onChange={(event) => setPreferredCurrency(event.target.value)}
+              onChange={(event) =>
+                updatePreferredCurrency(
+                  event.target.value as WalletProfile["preferredCurrency"],
+                )
+              }
               className="mt-3 h-10 rounded-md border border-[#d9d2c4] bg-white px-3"
             >
               <option value="USD">USD</option>

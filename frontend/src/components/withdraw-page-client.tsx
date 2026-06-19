@@ -2,12 +2,15 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { ccc } from "@ckb-ccc/core";
 import { useSigner } from "@ckb-ccc/connector-react";
 
 import { ConnectWalletButton } from "@/components/connect-wallet-button";
-import { addActivity } from "@/lib/activity-store";
-import { parseAssetAmount } from "@/lib/format";
+import { addActivity, updateActivityStatus } from "@/lib/activity-store";
+import {
+  getCkbExplorerTransactionUrl,
+  sendCkbTransfer,
+  waitForCkbTransaction,
+} from "@/lib/ckb-transactions";
 import { getConnectedAddress } from "@/lib/wallet";
 import type { AssetType } from "@/types/fibersave";
 
@@ -19,7 +22,9 @@ export function WithdrawPageClient() {
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
   const [status, setStatus] = useState<string | null>(null);
+  const [txHash, setTxHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     let isActive = true;
@@ -45,37 +50,66 @@ export function WithdrawPageClient() {
     event.preventDefault();
     setError(null);
     setStatus(null);
+    setTxHash(null);
+    setIsSubmitting(true);
 
     try {
       if (!address || !signer) {
-        throw new Error("Connect a wallet before preparing a withdrawal.");
+        throw new Error("Connect a wallet before sending a withdrawal.");
       }
-
-      parseAssetAmount(amount);
 
       if (asset !== "CKB") {
-        throw new Error("Only CKB withdrawal preparation is available in this MVP.");
+        throw new Error("Only CKB withdrawals are active. RGB++ and BTC remain disabled.");
       }
 
-      await ccc.Address.fromString(recipient.trim(), signer.client);
-
-      await addActivity({
+      setStatus("Building transaction and waiting for wallet approval...");
+      const nextTxHash = await sendCkbTransfer(signer, recipient, amount);
+      const activity = await addActivity({
         ownerAddress: address,
         type: "withdrawal",
         asset,
         amount,
         status: "pending",
+        txHash: nextTxHash,
         description: note.trim()
-          ? `Prepared withdrawal to ${recipient.trim()}: ${note.trim()}`
-          : `Prepared withdrawal to ${recipient.trim()}`,
+          ? `Sent CKB to ${recipient.trim()}: ${note.trim()}`
+          : `Sent CKB to ${recipient.trim()}`,
       });
 
+      setTxHash(nextTxHash);
       setRecipient("");
       setAmount("");
       setNote("");
-      setStatus("Withdrawal recorded as pending. Transaction signing will be connected in the testnet integration step.");
+      setStatus("Transaction broadcast. Waiting for CKB testnet confirmation.");
+
+      void waitForCkbTransaction(signer, nextTxHash).then(async (nextStatus) => {
+        await updateActivityStatus(activity.id, nextStatus, nextTxHash);
+        setStatus(
+          nextStatus === "complete"
+            ? "Withdrawal confirmed on CKB testnet."
+            : nextStatus === "failed"
+              ? "The CKB node rejected the withdrawal."
+              : "Transaction remains pending. Its status will refresh from the Activity page.",
+        );
+      }).catch(() => {
+        setStatus("Transaction broadcast. Its status will refresh from the Activity page.");
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to prepare withdrawal.");
+      const message = err instanceof Error ? err.message : "Unable to send withdrawal.";
+      setError(message);
+
+      if (address) {
+        await addActivity({
+          ownerAddress: address,
+          type: "withdrawal",
+          asset,
+          amount: amount || undefined,
+          status: "failed",
+          description: `Withdrawal failed: ${message}`,
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -95,7 +129,7 @@ export function WithdrawPageClient() {
           </p>
           <h1 className="mt-2 text-3xl font-semibold">Prepare withdrawal</h1>
           <p className="mt-2 text-[#6b7280]">
-            This MVP validates the request and records a pending activity item. Real transaction signing is the next testnet integration step.
+            Send CKB through your connected wallet. FiberSave builds the transaction, while your wallet controls approval and signing.
           </p>
         </div>
 
@@ -119,8 +153,8 @@ export function WithdrawPageClient() {
                 className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] bg-white px-3 outline-none focus:border-[#17594a]"
               >
                 <option value="CKB">CKB</option>
-                <option value="RGB_STABLE">RGB_STABLE</option>
-                <option value="BTC">BTC</option>
+                <option value="RGB_STABLE" disabled>RGB_STABLE (coming later)</option>
+                <option value="BTC" disabled>BTC (coming later)</option>
               </select>
             </label>
             <label className="block">
@@ -147,9 +181,22 @@ export function WithdrawPageClient() {
 
           {error ? <p className="mt-4 text-sm text-[#b42318]">{error}</p> : null}
           {status ? <p className="mt-4 text-sm text-[#17594a]">{status}</p> : null}
+          {txHash ? (
+            <a
+              href={getCkbExplorerTransactionUrl(txHash)}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 inline-block break-all text-sm font-medium text-[#17594a] underline"
+            >
+              View transaction on CKB Explorer
+            </a>
+          ) : null}
 
-          <button className="mt-6 inline-flex h-11 items-center justify-center rounded-md bg-[#17594a] px-5 text-sm font-medium text-white">
-            Prepare Withdrawal
+          <button
+            disabled={isSubmitting}
+            className="mt-6 inline-flex h-11 items-center justify-center rounded-md bg-[#17594a] px-5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting ? "Waiting for Wallet..." : "Send Withdrawal"}
           </button>
         </form>
       </section>

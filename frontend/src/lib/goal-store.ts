@@ -101,7 +101,17 @@ export async function updateGoal(
   return updated;
 }
 
-export async function archiveGoal(goalId: string): Promise<void> {
+export async function archiveGoal(goalId: string, ownerAddress: string): Promise<void> {
+  const goal = await getGoal(goalId);
+
+  if (!goal) {
+    throw new Error("Savings goal not found.");
+  }
+
+  if (goal.ownerAddress !== ownerAddress) {
+    throw new Error("This goal belongs to a different wallet.");
+  }
+
   await updateGoal(goalId, { status: "archived" });
 }
 

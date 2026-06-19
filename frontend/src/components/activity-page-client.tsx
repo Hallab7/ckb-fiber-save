@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useSigner } from "@ckb-ccc/connector-react";
 
 import { ConnectWalletButton } from "@/components/connect-wallet-button";
-import { listActivity } from "@/lib/activity-store";
+import { listActivity, syncPendingActivity } from "@/lib/activity-store";
+import { getCkbExplorerTransactionUrl } from "@/lib/ckb-transactions";
 import { formatAssetAmount } from "@/lib/format";
 import { getConnectedAddress } from "@/lib/wallet";
 import type { ActivityEvent } from "@/types/fibersave";
@@ -25,7 +26,12 @@ export function ActivityPageClient() {
 
     async function loadActivity() {
       const nextAddress = await getConnectedAddress(signer);
-      const nextEvents = nextAddress ? await listActivity(nextAddress) : [];
+      const nextEvents =
+        nextAddress && signer
+          ? await syncPendingActivity(nextAddress, signer)
+          : nextAddress
+            ? await listActivity(nextAddress)
+            : [];
 
       if (isActive) {
         setAddress(nextAddress);
@@ -99,8 +105,26 @@ export function ActivityPageClient() {
                     <p className="mt-1 text-sm text-[#6b7280]">
                       {event.amount ? formatAssetAmount(event.amount, event.asset) : event.asset} - {new Date(event.createdAt).toLocaleString()}
                     </p>
+                    {event.txHash ? (
+                      <a
+                        href={getCkbExplorerTransactionUrl(event.txHash)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-1 inline-block text-sm font-medium text-[#17594a] underline"
+                      >
+                        View on CKB Explorer
+                      </a>
+                    ) : null}
                   </div>
-                  <span className="h-fit w-fit rounded-md bg-[#edf7f3] px-2 py-1 text-xs font-medium text-[#17594a]">
+                  <span
+                    className={`h-fit w-fit rounded-md px-2 py-1 text-xs font-medium ${
+                      event.status === "failed"
+                        ? "bg-[#fef3f2] text-[#b42318]"
+                        : event.status === "pending"
+                          ? "bg-[#fff7e6] text-[#9a6700]"
+                          : "bg-[#edf7f3] text-[#17594a]"
+                    }`}
+                  >
                     {event.status}
                   </span>
                 </li>

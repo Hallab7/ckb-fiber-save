@@ -7,8 +7,13 @@ import { useSigner } from "@ckb-ccc/connector-react";
 
 import { assignFundsToGoal, removeFundsFromGoal } from "@/lib/goal-actions";
 import { addActivity } from "@/lib/activity-store";
-import { archiveGoal, getGoal } from "@/lib/goal-store";
-import { formatAssetAmount, getGoalProgress } from "@/lib/format";
+import { getAllBalances } from "@/lib/balances";
+import { archiveGoal, getGoal, listGoals } from "@/lib/goal-store";
+import {
+  formatAssetAmount,
+  getGoalProgress,
+  parseAssetAmount,
+} from "@/lib/format";
 import { getConnectedAddress } from "@/lib/wallet";
 import type { SavingsGoal } from "@/types/fibersave";
 import { ConnectWalletButton } from "./connect-wallet-button";
@@ -60,8 +65,27 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
     setError(null);
 
     try {
-      if (!address || !goal) {
+      if (!address || !goal || !signer) {
         throw new Error("Connect the goal owner wallet first.");
+      }
+
+      const [balances, goals] = await Promise.all([
+        getAllBalances(signer),
+        listGoals(address),
+      ]);
+      const balance = balances.find((item) => item.asset === goal.asset);
+      const walletAmount = parseAssetAmount(balance?.amount ?? "0", undefined, true);
+      const alreadyAssigned = goals
+        .filter((item) => item.asset === goal.asset && item.status !== "archived")
+        .reduce(
+          (total, item) =>
+            total + parseAssetAmount(item.assignedAmount, undefined, true),
+          0n,
+        );
+      const requested = parseAssetAmount(assignAmount);
+
+      if (alreadyAssigned + requested > walletAmount) {
+        throw new Error("This assignment exceeds the unassigned wallet balance.");
       }
 
       await assignFundsToGoal({
@@ -123,11 +147,11 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
     setError(null);
 
     try {
-      if (!goal) {
-        return;
+      if (!goal || !address || !signer) {
+        throw new Error("Connect the goal owner wallet first.");
       }
 
-      await archiveGoal(goal.id);
+      await archiveGoal(goal.id, address);
       await reloadGoal();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to archive goal.");

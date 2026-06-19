@@ -1,4 +1,7 @@
 import type { ActivityEvent } from "@/types/fibersave";
+import type { ccc } from "@ckb-ccc/core";
+
+import { getCkbTransactionState } from "./ckb-transactions";
 
 const STORAGE_KEY = "fibersave.activity.v1";
 
@@ -89,4 +92,28 @@ export async function clearActivity(ownerAddress?: string): Promise<void> {
   }
 
   writeActivity(readActivity().filter((event) => event.ownerAddress !== ownerAddress));
+}
+
+export async function syncPendingActivity(
+  ownerAddress: string,
+  signer: ccc.Signer,
+): Promise<ActivityEvent[]> {
+  const events = await listActivity(ownerAddress);
+
+  await Promise.all(
+    events
+      .filter((event) => event.status === "pending" && event.txHash)
+      .map(async (event) => {
+        try {
+          const status = await getCkbTransactionState(signer, event.txHash!);
+          if (status !== "pending") {
+            await updateActivityStatus(event.id, status);
+          }
+        } catch {
+          // Keep the event pending when the node is temporarily unavailable.
+        }
+      }),
+  );
+
+  return listActivity(ownerAddress);
 }
