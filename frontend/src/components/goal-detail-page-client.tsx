@@ -28,14 +28,19 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
   const [goal, setGoal] = useState<SavingsGoal | null>(null);
   const [assignAmount, setAssignAmount] = useState("");
   const [removeAmount, setRemoveAmount] = useState("");
+  const [availableAmount, setAvailableAmount] = useState("0");
   const [error, setError] = useState<string | null>(null);
 
   async function reloadGoal() {
     const nextAddress = await getConnectedAddress(signer);
     const nextGoal = await getGoal(goalId);
+    const nextBalances = await getAllBalances(signer);
 
     setAddress(nextAddress);
     setGoal(nextGoal);
+    setAvailableAmount(
+      nextBalances.find((balance) => balance.asset === nextGoal?.asset)?.amount ?? "0",
+    );
   }
 
   useEffect(() => {
@@ -44,10 +49,15 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
     async function loadGoal() {
       const nextAddress = await getConnectedAddress(signer);
       const nextGoal = await getGoal(goalId);
+      const nextBalances = await getAllBalances(signer);
 
       if (isActive) {
         setAddress(nextAddress);
         setGoal(nextGoal);
+        setAvailableAmount(
+          nextBalances.find((balance) => balance.asset === nextGoal?.asset)?.amount ??
+            "0",
+        );
       }
     }
 
@@ -65,7 +75,7 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
     setError(null);
 
     try {
-      if (!address || !goal || !signer) {
+      if (!address || !goal) {
         throw new Error("Connect the goal owner wallet first.");
       }
 
@@ -93,6 +103,7 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
         goalId: goal.id,
         asset: goal.asset,
         amount: assignAmount,
+        availableAmount,
       });
 
       await addActivity({
@@ -125,6 +136,7 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
         goalId: goal.id,
         asset: goal.asset,
         amount: removeAmount,
+        availableAmount,
       });
 
       await addActivity({
@@ -147,7 +159,7 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
     setError(null);
 
     try {
-      if (!goal || !address || !signer) {
+      if (!goal || !address) {
         throw new Error("Connect the goal owner wallet first.");
       }
 
@@ -210,6 +222,9 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
               <p className="mt-2 text-sm text-[#6b7280]">
                 These controls update goal metadata only. They do not lock,
                 transfer, or spend wallet funds.
+              </p>
+              <p className="mt-2 text-sm font-medium text-[#374151]">
+                Available wallet balance: {formatAssetAmount(availableAmount, goal.asset)}
               </p>
 
               <div className="mt-5 grid gap-4 sm:grid-cols-2">

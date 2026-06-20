@@ -2,13 +2,16 @@ import type { ccc } from "@ckb-ccc/core";
 import type { AssetBalance } from "@/types/fibersave";
 
 import { shannonsToCkb } from "./format";
+import { getDemoWallet } from "./wallet";
 
 export async function getCkbBalance(signer?: ccc.Signer): Promise<AssetBalance> {
   if (!signer) {
+    const demoWallet = getDemoWallet();
+
     return {
       asset: "CKB",
       symbol: "CKB",
-      amount: "0",
+      amount: demoWallet?.ckbBalance ?? "0",
     };
   }
 

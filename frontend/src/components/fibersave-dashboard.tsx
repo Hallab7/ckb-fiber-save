@@ -15,10 +15,12 @@ import {
 import { useSigner } from "@ckb-ccc/connector-react";
 
 import { getAllBalances } from "@/lib/balances";
+import { listGoals } from "@/lib/goal-store";
 import { getConnectedAddress } from "@/lib/wallet";
-import type { AssetBalance } from "@/types/fibersave";
+import type { AssetBalance, SavingsGoal } from "@/types/fibersave";
 import { BalanceCard } from "./balance-card";
 import { ConnectWalletButton } from "./connect-wallet-button";
+import { GoalCard } from "./goal-card";
 
 const buildSteps = [
   "Project structure and decisions",
@@ -33,6 +35,7 @@ export function FiberSaveDashboard() {
   const signer = useSigner();
   const [address, setAddress] = useState<string | null>(null);
   const [balances, setBalances] = useState<AssetBalance[]>([]);
+  const [goals, setGoals] = useState<SavingsGoal[]>([]);
   const [isLoadingBalances, setIsLoadingBalances] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,9 +46,11 @@ export function FiberSaveDashboard() {
     try {
       const nextAddress = await getConnectedAddress(signer);
       const nextBalances = await getAllBalances(signer);
+      const nextGoals = nextAddress ? await listGoals(nextAddress) : [];
 
       setAddress(nextAddress);
       setBalances(nextBalances);
+      setGoals(nextGoals);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to load wallet state.");
       setAddress(null);
@@ -65,10 +70,12 @@ export function FiberSaveDashboard() {
       try {
         const nextAddress = await getConnectedAddress(signer);
         const nextBalances = await getAllBalances(signer);
+        const nextGoals = nextAddress ? await listGoals(nextAddress) : [];
 
         if (isActive) {
           setAddress(nextAddress);
           setBalances(nextBalances);
+          setGoals(nextGoals);
         }
       } catch (err) {
         const fallbackBalances = await getAllBalances();
@@ -119,14 +126,14 @@ export function FiberSaveDashboard() {
           <section className="space-y-6">
             <div>
               <p className="mb-3 text-sm font-medium uppercase tracking-wide text-[#17594a]">
-                Phase 4 savings MVP
+                Phase 5 MVP checkpoint
               </p>
               <h1 className="max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl">
-                Save, receive, and withdraw with wallet-controlled funds.
+                Track wallet-controlled savings from one clear dashboard.
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-7 text-[#4b5563] sm:text-lg">
-                Connect a CKB wallet, track goals, detect deposits, send signed
-                testnet withdrawals, and follow transaction activity.
+                Connect a CKB wallet, monitor balances, organize funds around
+                goals, and follow deposit and withdrawal activity.
               </p>
             </div>
 
@@ -186,6 +193,43 @@ export function FiberSaveDashboard() {
                   <BalanceCard key={balance.asset} balance={balance} />
                 ))}
               </div>
+            </section>
+
+            <section>
+              <div className="mb-3 flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold">Active goals</h2>
+                  <p className="mt-1 text-sm text-[#6b6254]">
+                    Goal assignments are planning metadata, not locked funds.
+                  </p>
+                </div>
+                <Link
+                  href="/goals/new"
+                  className="shrink-0 text-sm font-medium text-[#17594a]"
+                >
+                  New goal
+                </Link>
+              </div>
+              {address && goals.filter((goal) => goal.status !== "archived").length > 0 ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {goals
+                    .filter((goal) => goal.status !== "archived")
+                    .slice(0, 4)
+                    .map((goal) => (
+                      <GoalCard key={goal.id} goal={goal} />
+                    ))}
+                </div>
+              ) : (
+                <div className="rounded-lg border border-dashed border-[#c9c0b0] bg-white p-5">
+                  <p className="font-medium">
+                    {address ? "No active goals yet." : "Connect a wallet to view goals."}
+                  </p>
+                  <p className="mt-1 text-sm text-[#6b7280]">
+                    Create a target for school fees, rent, emergency savings, or
+                    another real need.
+                  </p>
+                </div>
+              )}
             </section>
           </section>
 

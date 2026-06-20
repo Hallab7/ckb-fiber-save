@@ -1,5 +1,7 @@
 import type { SavingsGoal } from "@/types/fibersave";
 
+import { parseAssetAmount } from "./format";
+
 const STORAGE_KEY = "fibersave.goals.v1";
 
 type CreateGoalInput = {
@@ -57,6 +59,21 @@ export async function getGoal(goalId: string): Promise<SavingsGoal | null> {
 }
 
 export async function createGoal(input: CreateGoalInput): Promise<SavingsGoal> {
+  if (!input.name.trim()) {
+    throw new Error("Goal name is required.");
+  }
+
+  parseAssetAmount(input.targetAmount);
+
+  if (input.targetDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (new Date(input.targetDate) < today) {
+      throw new Error("Target date cannot be in the past.");
+    }
+  }
+
   const now = new Date().toISOString();
   const goal: SavingsGoal = {
     id: createId(),

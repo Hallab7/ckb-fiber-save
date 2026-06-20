@@ -16,3 +16,20 @@ body {
   background: var(--background);
   color: var(--foreground);
 }
+
+button,
+a,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled),
+a,
+select {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid rgb(23 89 74 / 35%);
+  outline-offset: 2px;
+}

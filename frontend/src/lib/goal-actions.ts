@@ -1,11 +1,12 @@
 import { formatUnits, parseAssetAmount } from "./format";
-import { getGoal, updateGoal } from "./goal-store";
+import { getGoal, listGoals, updateGoal } from "./goal-store";
 
 type GoalActionInput = {
   ownerAddress: string;
   goalId: string;
   asset: string;
   amount: string;
+  availableAmount: string;
 };
 
 function assertGoalAccess(goalOwnerAddress: string, inputOwnerAddress: string) {
@@ -30,6 +31,20 @@ export async function assignFundsToGoal(input: GoalActionInput): Promise<void> {
   const currentAssigned = parseAssetAmount(goal.assignedAmount || "0", undefined, true);
   const amount = parseAssetAmount(input.amount);
   const target = parseAssetAmount(goal.targetAmount);
+  const available = parseAssetAmount(input.availableAmount, undefined, true);
+  const goals = await listGoals(input.ownerAddress);
+  const assignedAcrossGoals = goals
+    .filter((item) => item.asset === goal.asset && item.status !== "archived")
+    .reduce(
+      (total, item) =>
+        total + parseAssetAmount(item.assignedAmount || "0", undefined, true),
+      0n,
+    );
+
+  if (assignedAcrossGoals + amount > available) {
+    throw new Error("Assignment exceeds the available wallet balance.");
+  }
+
   const nextAssigned = currentAssigned + amount;
 
   await updateGoal(goal.id, {

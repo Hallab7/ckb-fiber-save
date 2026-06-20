@@ -497,6 +497,11 @@ Settings:
 
 ## Phase 5 - MVP Testing, Polish, and Demo
 
+Implementation status: automated unit tests, desktop/mobile browser flows,
+available-balance validation, dashboard goal progress, responsive interaction
+polish, and demo documentation are implemented. The funded-wallet manual
+testnet checklist remains an operator verification step before a public demo.
+
 ### Step 5.1 - Unit Tests
 
 Test files:
