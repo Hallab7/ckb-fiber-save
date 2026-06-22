@@ -15,11 +15,13 @@ import {
 import { useSigner } from "@ckb-ccc/connector-react";
 
 import { getAllBalances } from "@/lib/balances";
+import { formatBalanceAmount } from "@/lib/format";
 import { listGoals } from "@/lib/goal-store";
 import { getConnectedAddress } from "@/lib/wallet";
 import type { AssetBalance, SavingsGoal } from "@/types/fibersave";
 import { BalanceCard } from "./balance-card";
 import { ConnectWalletButton } from "./connect-wallet-button";
+import { CopyAddress } from "./copy-address";
 import { GoalCard } from "./goal-card";
 
 const metrics = [
@@ -163,8 +165,11 @@ export function FiberSaveDashboard() {
                   <RefreshCw size={15} className={isLoadingBalances ? "animate-spin" : ""} />
                 </button>
               </div>
-              <p className="mt-10 text-5xl font-semibold sm:text-6xl">
-                {ckbBalance?.amount ?? "0"}
+              <p
+                className="mt-10 max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-[clamp(2.75rem,7vw,4rem)] font-semibold"
+                title={ckbBalance?.amount ?? "0"}
+              >
+                {formatBalanceAmount(ckbBalance?.amount ?? "0")}
               </p>
               <p className="mt-2 fs-caption">CKB available</p>
             </div>
@@ -183,9 +188,9 @@ export function FiberSaveDashboard() {
             </div>
             <div className="border-t border-[#e8e8e8] p-6 sm:p-8">
               <p className="fs-caption text-[#666666]">Connected identity</p>
-              <p className="mt-4 break-all font-mono text-xs leading-5">
-                {address ?? "NO WALLET CONNECTED"}
-              </p>
+              <div className="mt-4">
+                <CopyAddress address={address} />
+              </div>
               {error ? <p className="mt-4 text-xs text-[#555555]">{error}</p> : null}
             </div>
           </aside>

@@ -23,6 +23,31 @@ export function formatAssetAmount(amount: string, symbol: string) {
   return `${amount} ${symbol}`;
 }
 
+export function formatBalanceAmount(amount: string) {
+  const normalized = amount.trim();
+
+  if (!DECIMAL_PATTERN.test(normalized)) {
+    return "0.00";
+  }
+
+  const [whole, fraction = ""] = normalized.split(".");
+  const firstTwo = fraction.slice(0, 2).padEnd(2, "0");
+  const shouldRound = Number(fraction[2] ?? "0") >= 5;
+  let scaled = BigInt(whole) * 100n + BigInt(firstTwo);
+
+  if (shouldRound) {
+    scaled += 1n;
+  }
+
+  const roundedWhole = scaled / 100n;
+  const roundedFraction = (scaled % 100n).toString().padStart(2, "0");
+  const groupedWhole = roundedWhole
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  return `${groupedWhole}.${roundedFraction}`;
+}
+
 export function parseAssetAmount(amount: string, decimals = CKB_DECIMALS, allowZero = false) {
   const normalized = amount.trim();
 

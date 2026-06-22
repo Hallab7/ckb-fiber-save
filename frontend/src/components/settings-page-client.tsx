@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSigner } from "@ckb-ccc/connector-react";
 
 import { ConnectWalletButton } from "@/components/connect-wallet-button";
+import { CopyAddress } from "@/components/copy-address";
 import { clearActivity } from "@/lib/activity-store";
 import { clearDepositSnapshots } from "@/lib/deposit-tracker";
 import { clearGoals } from "@/lib/goal-store";
@@ -79,7 +80,9 @@ export function SettingsPageClient() {
         <div className="mt-6 grid gap-4">
           <section className="rounded-lg border border-[#e8e8e8] bg-white p-5">
             <h2 className="text-lg font-semibold">Connected wallet</h2>
-            <p className="mt-2 break-all text-sm text-[#666666]">{address ?? "No wallet connected"}</p>
+            <div className="mt-4 max-w-xl">
+              <CopyAddress address={address} emptyLabel="No wallet connected" />
+            </div>
           </section>
 
           <section className="rounded-lg border border-[#e8e8e8] bg-white p-5">

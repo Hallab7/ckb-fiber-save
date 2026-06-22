@@ -4,11 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import QRCode from "qrcode";
-import { Check, Copy, RefreshCw, Wallet } from "lucide-react";
+import { RefreshCw, Wallet } from "lucide-react";
 import { useSigner } from "@ckb-ccc/connector-react";
 
 import { BalanceCard } from "@/components/balance-card";
 import { ConnectWalletButton } from "@/components/connect-wallet-button";
+import { CopyAddress } from "@/components/copy-address";
 import { listActivity } from "@/lib/activity-store";
 import { getAllBalances } from "@/lib/balances";
 import { detectCkbDeposit } from "@/lib/deposit-tracker";
@@ -21,7 +22,6 @@ export function DepositPageClient() {
   const [balances, setBalances] = useState<AssetBalance[]>([]);
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [activity, setActivity] = useState<ActivityEvent[]>([]);
-  const [copied, setCopied] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -78,16 +78,6 @@ export function DepositPageClient() {
     return () => window.clearInterval(interval);
   }, [refresh, signer]);
 
-  async function copyAddress() {
-    if (!address) {
-      return;
-    }
-
-    await navigator.clipboard.writeText(address);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1500);
-  }
-
   return (
     <main className="min-h-screen bg-white px-5 py-6 text-black sm:px-8">
       <section className="mx-auto max-w-5xl">
@@ -122,18 +112,10 @@ export function DepositPageClient() {
                 </div>
                 <div>
                   <p className="text-sm text-[#666666]">Wallet address</p>
-                  <p className="mt-2 break-all rounded-md border border-[#e8e8e8] bg-[#fafafa] p-3 font-mono text-sm">
-                    {address}
-                  </p>
+                  <div className="mt-2">
+                    <CopyAddress address={address} />
+                  </div>
                   <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                    <button
-                      type="button"
-                      onClick={() => void copyAddress()}
-                      className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-black px-4 text-sm font-medium text-white"
-                    >
-                      {copied ? <Check size={16} /> : <Copy size={16} />}
-                      {copied ? "Copied" : "Copy Address"}
-                    </button>
                     <button
                       type="button"
                       onClick={() => void refresh(true)}

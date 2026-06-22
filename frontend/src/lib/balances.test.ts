@@ -2,6 +2,7 @@ import type { ccc } from "@ckb-ccc/core";
 import { describe, expect, it } from "vitest";
 
 import { getAllBalances, getCkbBalance } from "./balances";
+import { formatBalanceAmount } from "./format";
 
 describe("balances", () => {
   it("formats signer balance from shannons to CKB", async () => {
@@ -20,5 +21,10 @@ describe("balances", () => {
     const balances = await getAllBalances();
 
     expect(balances.map((balance) => balance.asset)).toEqual(["CKB", "RGB_STABLE"]);
+  });
+
+  it("rounds displayed balances to two decimal places", () => {
+    expect(formatBalanceAmount("123.456")).toBe("123.46");
+    expect(formatBalanceAmount("1000000")).toBe("1,000,000.00");
   });
 });

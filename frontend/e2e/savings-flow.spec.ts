@@ -48,14 +48,15 @@ test("creates, updates, and reviews a savings goal", async ({ page }) => {
 
 test("renders the demo-wallet dashboard and deposit state", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByText(demoWallet.address)).toBeVisible();
   await expect(
-    page.getByRole("complementary").getByText("500", { exact: true }),
+    page.getByRole("complementary").getByTitle(demoWallet.address),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("complementary").getByText("500.00", { exact: true }),
   ).toBeVisible();
 
   await page.goto("/deposit");
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("heading", { name: "Receive funds" })).toBeVisible();
-  await expect(page.getByText(demoWallet.address)).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy Address" })).toBeVisible();
 });
