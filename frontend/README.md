@@ -49,3 +49,9 @@ pnpm build
 
 The browser tests enable demo mode only inside the Playwright development
 server. `NEXT_PUBLIC_ENABLE_DEMO_MODE` must remain `false` for ordinary builds.
+
+## Demo and Readiness
+
+See the complete demo procedure, production-readiness assessment, and roadmap:
+
+[`../docs/demo-and-readiness-guide.md`](../docs/demo-and-readiness-guide.md)
