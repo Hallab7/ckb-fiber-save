@@ -94,7 +94,7 @@ export function FiberSaveDashboard() {
 
   return (
     <main className="min-h-screen bg-white text-black">
-      <div className="bg-black px-4 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-white sm:px-8">
+      <div className="fs-static-dark bg-black px-4 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-white sm:px-8">
         CKB testnet active / Non-custodial savings infrastructure
       </div>
 
@@ -307,7 +307,7 @@ export function FiberSaveDashboard() {
         </div>
       </section>
 
-      <footer className="border-t border-black bg-black text-white">
+      <footer className="fs-static-dark border-t border-black bg-black text-white">
         <div className="mx-auto flex max-w-[1600px] flex-col gap-8 px-4 py-12 sm:flex-row sm:items-end sm:justify-between sm:px-8">
           <div>
             <p className="fs-caption text-[#999999]">FiberSave / Nervos CKB</p>

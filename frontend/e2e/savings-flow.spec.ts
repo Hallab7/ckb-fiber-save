@@ -60,3 +60,14 @@ test("renders the demo-wallet dashboard and deposit state", async ({ page }) => 
   await expect(page.getByRole("heading", { name: "Receive funds" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy Address" })).toBeVisible();
 });
+
+test("persists dark mode across reloads", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.getByRole("button", { name: "Switch to light mode" })).toBeVisible();
+});
