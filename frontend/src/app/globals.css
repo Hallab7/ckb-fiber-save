@@ -115,6 +115,18 @@ textarea:focus {
   box-shadow: none;
 }
 
+.theme-icon-dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-icon-light {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-icon-dark {
+  display: block;
+}
+
 :root[data-theme="dark"] .bg-white {
   background-color: #050505 !important;
 }

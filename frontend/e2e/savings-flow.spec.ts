@@ -64,10 +64,13 @@ test("renders the demo-wallet dashboard and deposit state", async ({ page }) => 
 test("persists dark mode across reloads", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await page.getByRole("button", { name: "Toggle color theme" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(0, 0, 0)");
+  await expect(page.locator("body")).toHaveCSS("color", "rgb(255, 255, 255)");
 
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await expect(page.getByRole("button", { name: "Switch to light mode" })).toBeVisible();
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(0, 0, 0)");
+  await expect(page.getByRole("button", { name: "Toggle color theme" })).toBeVisible();
 });
