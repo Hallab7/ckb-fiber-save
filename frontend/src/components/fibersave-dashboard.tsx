@@ -235,7 +235,11 @@ export function FiberSaveDashboard() {
             </div>
             <div className="mt-8 flex h-36 items-end border border-[#e8e8e8] bg-[#fafafa] px-5">
               {[20, 32, 25, 48, 42, 61, 57, 78, 72, 88, 82, 100].map((height, index) => (
-                <div key={index} className="flex-1 border-l border-black" style={{ height: `${height}%` }} />
+                <div
+                  key={index}
+                  className="fs-dark-chart-line flex-1 border-l border-black"
+                  style={{ height: `${height}%` }}
+                />
               ))}
             </div>
           </div>
