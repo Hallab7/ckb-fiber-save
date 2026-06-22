@@ -14,29 +14,29 @@ export function GoalCard({ goal }: GoalCardProps) {
   return (
     <Link
       href={`/goals/${goal.id}`}
-      className="block rounded-lg border border-[#d9d2c4] bg-white p-4 shadow-sm transition hover:border-[#17594a]"
+      className="block min-h-52 border border-[#e8e8e8] bg-white p-6 transition hover:border-black"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-semibold">{goal.name}</p>
-          <p className="mt-1 text-sm text-[#6b6254]">
+          <p className="text-xl font-semibold">{goal.name}</p>
+          <p className="mt-1 text-sm text-[#666666]">
             {formatAssetAmount(goal.assignedAmount, goal.asset)} of{" "}
             {formatAssetAmount(goal.targetAmount, goal.asset)}
           </p>
         </div>
-        <span className="rounded-md bg-[#edf7f3] px-2 py-1 text-xs font-medium text-[#17594a]">
+        <span className="border border-[#e8e8e8] bg-[#f3f3f3] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-black">
           {goal.status}
         </span>
       </div>
 
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#ebe4d8]">
+      <div className="mt-10 h-1 overflow-hidden bg-[#e8e8e8]">
         <div
-          className="h-full rounded-full bg-[#17594a]"
+          className="h-full bg-black"
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      <div className="mt-3 flex items-center justify-between gap-3 text-sm text-[#6b7280]">
+      <div className="mt-3 flex items-center justify-between gap-3 text-sm text-[#666666]">
         <span>{progress.toFixed(1)}%</span>
         {goal.targetDate ? (
           <span className="inline-flex items-center gap-1">

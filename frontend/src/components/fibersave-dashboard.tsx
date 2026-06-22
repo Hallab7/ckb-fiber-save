@@ -4,13 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowDownLeft,
+  ArrowRight,
   ArrowUpRight,
   History,
-  Landmark,
-  PiggyBank,
+  Menu,
   RefreshCw,
   Settings,
-  Wallet,
+  ShieldCheck,
 } from "lucide-react";
 import { useSigner } from "@ckb-ccc/connector-react";
 
@@ -22,13 +22,11 @@ import { BalanceCard } from "./balance-card";
 import { ConnectWalletButton } from "./connect-wallet-button";
 import { GoalCard } from "./goal-card";
 
-const buildSteps = [
-  "Project structure and decisions",
-  "Wallet connection",
-  "Balance display",
-  "Savings goals",
-  "Deposit and withdrawal flows",
-  "Activity history",
+const metrics = [
+  ["Custody model", "100%", "User controlled"],
+  ["Settlement", "CKB", "Testnet active"],
+  ["Payment rail", "Fiber", "Next milestone"],
+  ["Goal records", "Local", "Private metadata"],
 ];
 
 export function FiberSaveDashboard() {
@@ -47,7 +45,6 @@ export function FiberSaveDashboard() {
       const nextAddress = await getConnectedAddress(signer);
       const nextBalances = await getAllBalances(signer);
       const nextGoals = nextAddress ? await listGoals(nextAddress) : [];
-
       setAddress(nextAddress);
       setBalances(nextBalances);
       setGoals(nextGoals);
@@ -61,241 +58,264 @@ export function FiberSaveDashboard() {
   }
 
   useEffect(() => {
-    let isActive = true;
+    let active = true;
 
-    async function loadWalletState() {
-      setError(null);
-      setIsLoadingBalances(true);
-
+    queueMicrotask(async () => {
       try {
         const nextAddress = await getConnectedAddress(signer);
         const nextBalances = await getAllBalances(signer);
         const nextGoals = nextAddress ? await listGoals(nextAddress) : [];
-
-        if (isActive) {
+        if (active) {
           setAddress(nextAddress);
           setBalances(nextBalances);
           setGoals(nextGoals);
+          setIsLoadingBalances(false);
         }
       } catch (err) {
-        const fallbackBalances = await getAllBalances();
-
-        if (isActive) {
+        if (active) {
           setError(err instanceof Error ? err.message : "Unable to load wallet state.");
-          setAddress(null);
-          setBalances(fallbackBalances);
-        }
-      } finally {
-        if (isActive) {
           setIsLoadingBalances(false);
         }
       }
-    }
-
-    queueMicrotask(() => {
-      void loadWalletState();
     });
 
     return () => {
-      isActive = false;
+      active = false;
     };
   }, [signer]);
 
-  const totalLabel = useMemo(() => {
-    const ckb = balances.find((balance) => balance.asset === "CKB");
-    return ckb ? `${ckb.amount} ${ckb.symbol}` : "0 CKB";
-  }, [balances]);
+  const ckbBalance = useMemo(
+    () => balances.find((balance) => balance.asset === "CKB"),
+    [balances],
+  );
+  const activeGoals = goals.filter((goal) => goal.status !== "archived");
 
   return (
-    <main className="min-h-screen bg-[#f7f4ee] text-[#111827]">
-      <section className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8">
-        <header className="flex items-center justify-between border-b border-[#d9d2c4] pb-5">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-md bg-[#17594a] text-white">
-              <PiggyBank size={21} aria-hidden="true" />
-            </div>
-            <div>
-              <p className="text-lg font-semibold">FiberSave</p>
-              <p className="text-sm text-[#6b6254]">CKB testnet MVP</p>
+    <main className="min-h-screen bg-white text-black">
+      <div className="bg-black px-4 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-white sm:px-8">
+        CKB testnet active / Non-custodial savings infrastructure
+      </div>
+
+      <nav className="border-b border-[#e8e8e8]">
+        <div className="mx-auto flex h-20 max-w-[1600px] items-center px-4 sm:px-8">
+          <Link href="/" className="text-xl font-semibold">
+            FIBERSAVE
+          </Link>
+          <div className="ml-16 hidden items-center gap-10 text-sm font-medium lg:flex">
+            <Link href="/goals">Goals</Link>
+            <Link href="/deposit">Deposit</Link>
+            <Link href="/withdraw">Transfer</Link>
+            <Link href="/activity">Activity</Link>
+          </div>
+          <div className="ml-auto hidden sm:block">
+            <ConnectWalletButton address={address} />
+          </div>
+          <Link
+            href="/settings"
+            aria-label="Open settings"
+            className="ml-3 hidden size-12 items-center justify-center border border-[#e8e8e8] sm:inline-flex"
+          >
+            <Settings size={17} />
+          </Link>
+          <Link
+            href="/goals"
+            aria-label="Open navigation"
+            className="ml-auto inline-flex size-12 items-center justify-center border border-black sm:hidden"
+          >
+            <Menu size={18} />
+          </Link>
+        </div>
+      </nav>
+
+      <section className="border-b border-[#e8e8e8]">
+        <div className="mx-auto grid max-w-[1600px] lg:grid-cols-12">
+          <div className="px-4 py-16 sm:px-8 sm:py-20 lg:col-span-8 lg:border-r lg:border-[#e8e8e8] lg:py-24">
+            <p className="fs-caption text-[#666666]">Personal treasury / CKB + Fiber</p>
+            <h1 className="mt-8 max-w-5xl text-[48px] font-semibold leading-[0.94] sm:text-[72px] lg:text-[92px] xl:text-[106px]">
+              SAVE WITH
+              <br />
+              FULL CONTROL.
+            </h1>
+            <div className="mt-10 flex max-w-3xl flex-col gap-8 border-t border-[#e8e8e8] pt-8 sm:flex-row sm:items-end sm:justify-between">
+              <p className="max-w-xl text-base leading-7 text-[#555555] sm:text-lg">
+                A non-custodial financial command center for CKB savings goals,
+                verified activity, deposits, and wallet-approved transfers.
+              </p>
+              <Link
+                href="/goals/new"
+                className="fs-action inline-flex shrink-0 items-center justify-center gap-3 bg-black text-white hover:bg-white hover:text-black"
+              >
+                Create goal <ArrowRight size={16} />
+              </Link>
             </div>
           </div>
-          <ConnectWalletButton address={address} />
-        </header>
 
-        <div className="grid flex-1 gap-8 py-8 lg:grid-cols-[1fr_360px]">
-          <section className="space-y-6">
-            <div>
-              <p className="mb-3 text-sm font-medium uppercase tracking-wide text-[#17594a]">
-                Phase 5 MVP checkpoint
-              </p>
-              <h1 className="max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl">
-                Track wallet-controlled savings from one clear dashboard.
-              </h1>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-[#4b5563] sm:text-lg">
-                Connect a CKB wallet, monitor balances, organize funds around
-                goals, and follow deposit and withdrawal activity.
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-[#d9d2c4] bg-white p-5 shadow-sm">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <p className="text-sm text-[#6b6254]">Connected wallet</p>
-                  <p className="mt-2 break-all text-base font-medium">
-                    {address ?? "No wallet connected"}
-                  </p>
-                </div>
+          <aside className="grid bg-[#fafafa] lg:col-span-4">
+            <div className="border-b border-[#e8e8e8] p-6 sm:p-8">
+              <div className="flex items-center justify-between">
+                <span className="fs-caption text-[#666666]">Account snapshot</span>
                 <button
                   type="button"
                   onClick={() => void refreshWalletState()}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d9d2c4] px-4 text-sm font-medium text-[#374151]"
+                  className="inline-flex size-10 items-center justify-center border border-[#d6d6d6] bg-white"
+                  aria-label="Refresh wallet data"
                 >
-                  <RefreshCw size={16} aria-hidden="true" />
-                  Refresh
+                  <RefreshCw size={15} className={isLoadingBalances ? "animate-spin" : ""} />
                 </button>
               </div>
-              {error ? <p className="mt-4 text-sm text-[#b42318]">{error}</p> : null}
+              <p className="mt-10 text-5xl font-semibold sm:text-6xl">
+                {ckbBalance?.amount ?? "0"}
+              </p>
+              <p className="mt-2 fs-caption">CKB available</p>
             </div>
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border border-[#d9d2c4] bg-white p-4">
-                <Wallet className="mb-3 text-[#17594a]" size={22} />
-                <p className="font-medium">Wallet first</p>
-                <p className="mt-1 text-sm text-[#6b7280]">
-                  Existing wallet connection before embedded custody.
+            <div className="grid grid-cols-2">
+              <div className="border-r border-[#e8e8e8] p-6 sm:p-8">
+                <p className="fs-caption text-[#666666]">Active goals</p>
+                <p className="mt-5 text-4xl font-semibold">
+                  {activeGoals.length.toString().padStart(2, "0")}
                 </p>
               </div>
-              <div className="rounded-lg border border-[#d9d2c4] bg-white p-4">
-                <PiggyBank className="mb-3 text-[#17594a]" size={22} />
-                <p className="font-medium">Goal metadata</p>
-                <p className="mt-1 text-sm text-[#6b7280]">
-                  Savings goals track progress without locking funds.
-                </p>
-              </div>
-              <div className="rounded-lg border border-[#d9d2c4] bg-white p-4">
-                <Landmark className="mb-3 text-[#17594a]" size={22} />
-                <p className="font-medium">CKB testnet</p>
-                <p className="mt-1 text-sm text-[#6b7280]">
-                  Balance and transaction work starts on testnet.
-                </p>
+              <div className="p-6 sm:p-8">
+                <p className="fs-caption text-[#666666]">Network</p>
+                <p className="mt-5 text-lg font-semibold">TESTNET</p>
+                <p className="mt-2 text-xs text-[#666666]">Operational</p>
               </div>
             </div>
-
-            <section>
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Balances</h2>
-                <span className="text-sm text-[#6b6254]">
-                  {isLoadingBalances ? "Loading..." : "Testnet view"}
-                </span>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {balances.map((balance) => (
-                  <BalanceCard key={balance.asset} balance={balance} />
-                ))}
-              </div>
-            </section>
-
-            <section>
-              <div className="mb-3 flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-xl font-semibold">Active goals</h2>
-                  <p className="mt-1 text-sm text-[#6b6254]">
-                    Goal assignments are planning metadata, not locked funds.
-                  </p>
-                </div>
-                <Link
-                  href="/goals/new"
-                  className="shrink-0 text-sm font-medium text-[#17594a]"
-                >
-                  New goal
-                </Link>
-              </div>
-              {address && goals.filter((goal) => goal.status !== "archived").length > 0 ? (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {goals
-                    .filter((goal) => goal.status !== "archived")
-                    .slice(0, 4)
-                    .map((goal) => (
-                      <GoalCard key={goal.id} goal={goal} />
-                    ))}
-                </div>
-              ) : (
-                <div className="rounded-lg border border-dashed border-[#c9c0b0] bg-white p-5">
-                  <p className="font-medium">
-                    {address ? "No active goals yet." : "Connect a wallet to view goals."}
-                  </p>
-                  <p className="mt-1 text-sm text-[#6b7280]">
-                    Create a target for school fees, rent, emergency savings, or
-                    another real need.
-                  </p>
-                </div>
-              )}
-            </section>
-          </section>
-
-          <aside className="space-y-4">
-            <div className="rounded-lg border border-[#d9d2c4] bg-white p-5 shadow-sm">
-              <p className="text-sm text-[#6b6254]">Total visible balance</p>
-              <p className="mt-2 text-3xl font-semibold">{totalLabel}</p>
-              <div className="mt-5 grid grid-cols-2 gap-2">
-                <Link
-                  href="/deposit"
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#17594a] px-3 text-sm font-medium text-white"
-                >
-                  <ArrowDownLeft size={16} aria-hidden="true" />
-                  Deposit
-                </Link>
-                <Link
-                  href="/withdraw"
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d9d2c4] px-3 text-sm font-medium text-[#374151]"
-                >
-                  <ArrowUpRight size={16} aria-hidden="true" />
-                  Withdraw
-                </Link>
-                <Link
-                  href="/goals"
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d9d2c4] px-3 text-sm font-medium text-[#374151]"
-                >
-                  <PiggyBank size={16} aria-hidden="true" />
-                  Goals
-                </Link>
-                <Link
-                  href="/activity"
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d9d2c4] px-3 text-sm font-medium text-[#374151]"
-                >
-                  <History size={16} aria-hidden="true" />
-                  Activity
-                </Link>
-              </div>
-            </div>
-
-            <Link
-              href="/settings"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#d9d2c4] bg-white px-4 py-3 text-sm font-medium text-[#374151] shadow-sm"
-            >
-              <Settings size={16} aria-hidden="true" />
-              Settings
-            </Link>
-
-            <div className="rounded-lg border border-[#d9d2c4] bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">MVP Build Path</h2>
-                <ArrowUpRight size={18} className="text-[#17594a]" />
-              </div>
-              <ol className="mt-5 space-y-4 text-sm">
-                {buildSteps.map((item, index) => (
-                  <li key={item} className="flex gap-3">
-                    <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-[#edf7f3] text-xs font-semibold text-[#17594a]">
-                      {index + 1}
-                    </span>
-                    <span className="pt-1 text-[#374151]">{item}</span>
-                  </li>
-                ))}
-              </ol>
+            <div className="border-t border-[#e8e8e8] p-6 sm:p-8">
+              <p className="fs-caption text-[#666666]">Connected identity</p>
+              <p className="mt-4 break-all font-mono text-xs leading-5">
+                {address ?? "NO WALLET CONNECTED"}
+              </p>
+              {error ? <p className="mt-4 text-xs text-[#555555]">{error}</p> : null}
             </div>
           </aside>
         </div>
       </section>
+
+      <section className="border-b border-[#e8e8e8]">
+        <div className="mx-auto grid max-w-[1600px] sm:grid-cols-2 lg:grid-cols-4">
+          {metrics.map(([label, value, detail], index) => (
+            <div
+              key={label}
+              className={`min-h-44 p-6 sm:p-8 ${
+                index < metrics.length - 1 ? "border-b border-[#e8e8e8] sm:border-r lg:border-b-0" : ""
+              }`}
+            >
+              <p className="fs-caption text-[#666666]">{label}</p>
+              <p className="mt-8 text-4xl font-semibold sm:text-5xl">
+                {value}
+              </p>
+              <p className="mt-3 text-sm text-[#666666]">{detail}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-[1600px] border-x border-[#e8e8e8]">
+        <div className="grid lg:grid-cols-12">
+          <div className="p-6 sm:p-8 lg:col-span-7 lg:border-r lg:border-[#e8e8e8]">
+            <div className="flex items-end justify-between border-b border-[#e8e8e8] pb-6">
+              <div>
+                <p className="fs-caption text-[#666666]">Portfolio allocation</p>
+                <h2 className="mt-3 text-3xl font-semibold">
+                  Asset balances
+                </h2>
+              </div>
+              <span className="fs-caption text-[#666666]">Live wallet data</span>
+            </div>
+            <div className="mt-6 grid sm:grid-cols-2">
+              {balances.map((balance) => (
+                <BalanceCard key={balance.asset} balance={balance} />
+              ))}
+            </div>
+            <div className="mt-8 flex h-36 items-end border border-[#e8e8e8] bg-[#fafafa] px-5">
+              {[20, 32, 25, 48, 42, 61, 57, 78, 72, 88, 82, 100].map((height, index) => (
+                <div key={index} className="flex-1 border-l border-black" style={{ height: `${height}%` }} />
+              ))}
+            </div>
+          </div>
+
+          <aside className="lg:col-span-5">
+            <div className="border-b border-[#e8e8e8] p-6 sm:p-8">
+              <p className="fs-caption text-[#666666]">Financial commands</p>
+              <div className="mt-6 grid grid-cols-2">
+                <Link href="/deposit" className="fs-action inline-flex items-center gap-3 bg-black text-white hover:bg-white hover:text-black">
+                  <ArrowDownLeft size={16} /> Deposit
+                </Link>
+                <Link href="/withdraw" className="fs-action inline-flex items-center gap-3 bg-white text-black">
+                  <ArrowUpRight size={16} /> Transfer
+                </Link>
+                <Link href="/activity" className="fs-action inline-flex items-center gap-3 bg-white text-black">
+                  <History size={16} /> Activity
+                </Link>
+                <Link href="/settings" className="fs-action inline-flex items-center gap-3 bg-white text-black">
+                  <Settings size={16} /> Settings
+                </Link>
+              </div>
+            </div>
+            <div className="p-6 sm:p-8">
+              <div className="flex items-center justify-between">
+                <p className="fs-caption text-[#666666]">Security status</p>
+                <ShieldCheck size={18} />
+              </div>
+              {[
+                ["Private keys", "Wallet controlled"],
+                ["Transfers", "Explicit approval"],
+                ["Goal records", "Local metadata"],
+                ["Custody exposure", "None"],
+              ].map(([label, value]) => (
+                <div key={label} className="flex justify-between border-b border-[#e8e8e8] py-5 text-sm">
+                  <span className="text-[#666666]">{label}</span>
+                  <span className="font-medium">{value}</span>
+                </div>
+              ))}
+            </div>
+          </aside>
+        </div>
+
+        <div className="border-t border-[#e8e8e8] p-6 sm:p-8">
+          <div className="flex items-end justify-between gap-6 border-b border-[#e8e8e8] pb-6">
+            <div>
+              <p className="fs-caption text-[#666666]">Savings ledger</p>
+              <h2 className="mt-3 text-3xl font-semibold">Active goals</h2>
+            </div>
+            <Link href="/goals/new" className="fs-caption inline-flex items-center gap-2">
+              New goal <ArrowRight size={14} />
+            </Link>
+          </div>
+          {address && activeGoals.length > 0 ? (
+            <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3">
+              {activeGoals.slice(0, 6).map((goal) => (
+                <GoalCard key={goal.id} goal={goal} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-6 min-h-48 border border-dashed border-[#d6d6d6] p-8">
+              <p className="fs-caption text-[#666666]">No active positions</p>
+              <p className="mt-6 max-w-md text-2xl font-semibold">
+                {address
+                  ? "Create a financial target and start tracking progress."
+                  : "Connect a wallet to activate your personal savings ledger."}
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <footer className="border-t border-black bg-black text-white">
+        <div className="mx-auto flex max-w-[1600px] flex-col gap-8 px-4 py-12 sm:flex-row sm:items-end sm:justify-between sm:px-8">
+          <div>
+            <p className="fs-caption text-[#999999]">FiberSave / Nervos CKB</p>
+            <p className="mt-4 text-3xl font-semibold">
+              CONTROL YOUR SAVINGS.
+            </p>
+          </div>
+          <p className="max-w-md text-sm leading-6 text-[#999999]">
+            Non-custodial infrastructure for goal-based savings and future Fiber
+            remittance.
+          </p>
+        </div>
+      </footer>
     </main>
   );
 }

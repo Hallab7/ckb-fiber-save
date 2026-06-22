@@ -49,7 +49,9 @@ test("creates, updates, and reviews a savings goal", async ({ page }) => {
 test("renders the demo-wallet dashboard and deposit state", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText(demoWallet.address)).toBeVisible();
-  await expect(page.getByRole("complementary").getByText("500 CKB")).toBeVisible();
+  await expect(
+    page.getByRole("complementary").getByText("500", { exact: true }),
+  ).toBeVisible();
 
   await page.goto("/deposit");
   await page.waitForLoadState("networkidle");

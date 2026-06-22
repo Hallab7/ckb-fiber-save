@@ -114,9 +114,9 @@ export function WithdrawPageClient() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f4ee] px-5 py-6 text-[#111827] sm:px-8">
+    <main className="min-h-screen bg-white px-5 py-6 text-black sm:px-8">
       <section className="mx-auto max-w-3xl">
-        <header className="flex items-center justify-between border-b border-[#d9d2c4] pb-5">
+        <header className="flex items-center justify-between border-b border-[#e8e8e8] pb-5">
           <Link href="/" className="text-lg font-semibold">
             FiberSave
           </Link>
@@ -124,22 +124,22 @@ export function WithdrawPageClient() {
         </header>
 
         <div className="mt-8">
-          <p className="text-sm font-medium uppercase tracking-wide text-[#17594a]">
+          <p className="text-sm font-medium uppercase tracking-wide text-black">
             Withdraw
           </p>
           <h1 className="mt-2 text-3xl font-semibold">Prepare withdrawal</h1>
-          <p className="mt-2 text-[#6b7280]">
+          <p className="mt-2 text-[#666666]">
             Send CKB through your connected wallet. FiberSave builds the transaction, while your wallet controls approval and signing.
           </p>
         </div>
 
-        <form onSubmit={onSubmit} className="mt-6 rounded-lg border border-[#d9d2c4] bg-white p-5 shadow-sm">
+        <form onSubmit={onSubmit} className="mt-6 rounded-lg border border-[#e8e8e8] bg-white p-5 shadow-sm">
           <label className="block">
             <span className="text-sm font-medium">Recipient address</span>
             <input
               value={recipient}
               onChange={(event) => setRecipient(event.target.value)}
-              className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] px-3 outline-none focus:border-[#17594a]"
+              className="mt-2 h-11 w-full rounded-md border border-[#e8e8e8] px-3 outline-none focus:border-black"
               placeholder="ckt1..."
             />
           </label>
@@ -150,7 +150,7 @@ export function WithdrawPageClient() {
               <select
                 value={asset}
                 onChange={(event) => setAsset(event.target.value as AssetType)}
-                className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] bg-white px-3 outline-none focus:border-[#17594a]"
+                className="mt-2 h-11 w-full rounded-md border border-[#e8e8e8] bg-white px-3 outline-none focus:border-black"
               >
                 <option value="CKB">CKB</option>
                 <option value="RGB_STABLE" disabled>RGB_STABLE (coming later)</option>
@@ -162,7 +162,7 @@ export function WithdrawPageClient() {
               <input
                 value={amount}
                 onChange={(event) => setAmount(event.target.value)}
-                className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] px-3 outline-none focus:border-[#17594a]"
+                className="mt-2 h-11 w-full rounded-md border border-[#e8e8e8] px-3 outline-none focus:border-black"
                 inputMode="decimal"
                 placeholder="100"
               />
@@ -174,19 +174,19 @@ export function WithdrawPageClient() {
             <input
               value={note}
               onChange={(event) => setNote(event.target.value)}
-              className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] px-3 outline-none focus:border-[#17594a]"
+              className="mt-2 h-11 w-full rounded-md border border-[#e8e8e8] px-3 outline-none focus:border-black"
               placeholder="Optional"
             />
           </label>
 
           {error ? <p className="mt-4 text-sm text-[#b42318]">{error}</p> : null}
-          {status ? <p className="mt-4 text-sm text-[#17594a]">{status}</p> : null}
+          {status ? <p className="mt-4 text-sm text-black">{status}</p> : null}
           {txHash ? (
             <a
               href={getCkbExplorerTransactionUrl(txHash)}
               target="_blank"
               rel="noreferrer"
-              className="mt-2 inline-block break-all text-sm font-medium text-[#17594a] underline"
+              className="mt-2 inline-block break-all text-sm font-medium text-black underline"
             >
               View transaction on CKB Explorer
             </a>
@@ -194,7 +194,7 @@ export function WithdrawPageClient() {
 
           <button
             disabled={isSubmitting}
-            className="mt-6 inline-flex h-11 items-center justify-center rounded-md bg-[#17594a] px-5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-6 inline-flex h-11 items-center justify-center rounded-md bg-black px-5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? "Waiting for Wallet..." : "Send Withdrawal"}
           </button>

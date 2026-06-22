@@ -89,9 +89,9 @@ export function DepositPageClient() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f4ee] px-5 py-6 text-[#111827] sm:px-8">
+    <main className="min-h-screen bg-white px-5 py-6 text-black sm:px-8">
       <section className="mx-auto max-w-5xl">
-        <header className="flex items-center justify-between border-b border-[#d9d2c4] pb-5">
+        <header className="flex items-center justify-between border-b border-[#e8e8e8] pb-5">
           <Link href="/" className="text-lg font-semibold">
             FiberSave
           </Link>
@@ -99,37 +99,37 @@ export function DepositPageClient() {
         </header>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_340px]">
-          <section className="rounded-lg border border-[#d9d2c4] bg-white p-5 shadow-sm">
-            <p className="text-sm font-medium uppercase tracking-wide text-[#17594a]">
+          <section className="rounded-lg border border-[#e8e8e8] bg-white p-5 shadow-sm">
+            <p className="text-sm font-medium uppercase tracking-wide text-black">
               Deposit
             </p>
             <h1 className="mt-2 text-3xl font-semibold">Receive funds</h1>
-            <p className="mt-2 text-[#6b7280]">
+            <p className="mt-2 text-[#666666]">
               Copy your connected wallet address or scan the QR code from a sender wallet.
             </p>
 
             {!address ? (
-              <div className="mt-6 rounded-md border border-dashed border-[#c9c0b0] p-5">
-                <Wallet className="text-[#17594a]" size={28} />
+              <div className="mt-6 rounded-md border border-dashed border-[#d6d6d6] p-5">
+                <Wallet className="text-black" size={28} />
                 <p className="mt-3 font-medium">Connect wallet to show deposit address.</p>
               </div>
             ) : (
               <div className="mt-6 grid gap-5 sm:grid-cols-[240px_1fr]">
-                <div className="flex min-h-[240px] items-center justify-center rounded-lg border border-[#d9d2c4] bg-[#faf8f3] p-4">
+                <div className="flex min-h-[240px] items-center justify-center rounded-lg border border-[#e8e8e8] bg-[#fafafa] p-4">
                   {qrCode ? (
                     <Image src={qrCode} alt="Deposit address QR code" width={220} height={220} />
                   ) : null}
                 </div>
                 <div>
-                  <p className="text-sm text-[#6b6254]">Wallet address</p>
-                  <p className="mt-2 break-all rounded-md border border-[#d9d2c4] bg-[#faf8f3] p-3 font-mono text-sm">
+                  <p className="text-sm text-[#666666]">Wallet address</p>
+                  <p className="mt-2 break-all rounded-md border border-[#e8e8e8] bg-[#fafafa] p-3 font-mono text-sm">
                     {address}
                   </p>
                   <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                     <button
                       type="button"
                       onClick={() => void copyAddress()}
-                      className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#17594a] px-4 text-sm font-medium text-white"
+                      className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-black px-4 text-sm font-medium text-white"
                     >
                       {copied ? <Check size={16} /> : <Copy size={16} />}
                       {copied ? "Copied" : "Copy Address"}
@@ -138,13 +138,13 @@ export function DepositPageClient() {
                       type="button"
                       onClick={() => void refresh(true)}
                       disabled={isRefreshing}
-                      className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d9d2c4] px-4 text-sm font-medium text-[#374151] disabled:opacity-60"
+                      className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#e8e8e8] px-4 text-sm font-medium text-[#222222] disabled:opacity-60"
                     >
                       <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
                       {isRefreshing ? "Checking..." : "Check Deposit"}
                     </button>
                   </div>
-                  {status ? <p className="mt-3 text-sm text-[#17594a]">{status}</p> : null}
+                  {status ? <p className="mt-3 text-sm text-black">{status}</p> : null}
                   {error ? <p className="mt-3 text-sm text-[#b42318]">{error}</p> : null}
                 </div>
               </div>
@@ -160,9 +160,9 @@ export function DepositPageClient() {
                 ))}
               </div>
             </div>
-            <div className="rounded-lg border border-[#d9d2c4] bg-white p-4">
+            <div className="rounded-lg border border-[#e8e8e8] bg-white p-4">
               <h2 className="font-semibold">Recent deposit activity</h2>
-              <div className="mt-3 space-y-2 text-sm text-[#6b7280]">
+              <div className="mt-3 space-y-2 text-sm text-[#666666]">
                 {activity.filter((event) => event.type === "deposit").slice(0, 3).map((event) => (
                   <p key={event.id}>{event.description} - {event.status}</p>
                 ))}

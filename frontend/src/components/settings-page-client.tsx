@@ -60,9 +60,9 @@ export function SettingsPageClient() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f4ee] px-5 py-6 text-[#111827] sm:px-8">
+    <main className="min-h-screen bg-white px-5 py-6 text-black sm:px-8">
       <section className="mx-auto max-w-4xl">
-        <header className="flex items-center justify-between border-b border-[#d9d2c4] pb-5">
+        <header className="flex items-center justify-between border-b border-[#e8e8e8] pb-5">
           <Link href="/" className="text-lg font-semibold">
             FiberSave
           </Link>
@@ -70,19 +70,19 @@ export function SettingsPageClient() {
         </header>
 
         <div className="mt-8">
-          <p className="text-sm font-medium uppercase tracking-wide text-[#17594a]">
+          <p className="text-sm font-medium uppercase tracking-wide text-black">
             Settings
           </p>
           <h1 className="mt-2 text-3xl font-semibold">Wallet and preferences</h1>
         </div>
 
         <div className="mt-6 grid gap-4">
-          <section className="rounded-lg border border-[#d9d2c4] bg-white p-5">
+          <section className="rounded-lg border border-[#e8e8e8] bg-white p-5">
             <h2 className="text-lg font-semibold">Connected wallet</h2>
-            <p className="mt-2 break-all text-sm text-[#6b7280]">{address ?? "No wallet connected"}</p>
+            <p className="mt-2 break-all text-sm text-[#666666]">{address ?? "No wallet connected"}</p>
           </section>
 
-          <section className="rounded-lg border border-[#d9d2c4] bg-white p-5">
+          <section className="rounded-lg border border-[#e8e8e8] bg-white p-5">
             <h2 className="text-lg font-semibold">Display currency</h2>
             <select
               value={preferredCurrency}
@@ -91,7 +91,7 @@ export function SettingsPageClient() {
                   event.target.value as WalletProfile["preferredCurrency"],
                 )
               }
-              className="mt-3 h-10 rounded-md border border-[#d9d2c4] bg-white px-3"
+              className="mt-3 h-10 rounded-md border border-[#e8e8e8] bg-white px-3"
             >
               <option value="USD">USD</option>
               <option value="NGN">NGN</option>
@@ -99,28 +99,28 @@ export function SettingsPageClient() {
             </select>
           </section>
 
-          <section className="rounded-lg border border-[#d9d2c4] bg-white p-5">
+          <section className="rounded-lg border border-[#e8e8e8] bg-white p-5">
             <h2 className="text-lg font-semibold">Security boundary</h2>
-            <p className="mt-2 text-sm leading-6 text-[#6b7280]">
+            <p className="mt-2 text-sm leading-6 text-[#666666]">
               FiberSave stores savings goals and activity metadata locally in this MVP. It does not store private keys and cannot move funds without wallet signing.
             </p>
           </section>
 
-          <section className="rounded-lg border border-[#d9d2c4] bg-white p-5">
+          <section className="rounded-lg border border-[#e8e8e8] bg-white p-5">
             <h2 className="text-lg font-semibold">Supported assets</h2>
-            <p className="mt-2 text-sm text-[#6b7280]">CKB is active for the MVP. RGB_STABLE and BTC remain interface-ready placeholders until their integration paths are finalized.</p>
+            <p className="mt-2 text-sm text-[#666666]">CKB is active for the MVP. RGB_STABLE and BTC remain interface-ready placeholders until their integration paths are finalized.</p>
           </section>
 
-          <section className="rounded-lg border border-[#d9d2c4] bg-white p-5">
+          <section className="rounded-lg border border-[#e8e8e8] bg-white p-5">
             <h2 className="text-lg font-semibold">Development metadata</h2>
             <button
               type="button"
               onClick={() => void clearLocalMetadata()}
-              className="mt-3 h-10 rounded-md border border-[#d9d2c4] px-4 text-sm font-medium text-[#374151]"
+              className="mt-3 h-10 rounded-md border border-[#e8e8e8] px-4 text-sm font-medium text-[#222222]"
             >
               Clear Local Metadata
             </button>
-            {status ? <p className="mt-3 text-sm text-[#17594a]">{status}</p> : null}
+            {status ? <p className="mt-3 text-sm text-black">{status}</p> : null}
           </section>
         </div>
       </section>

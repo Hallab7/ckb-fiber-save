@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f4ee;
-  --foreground: #111827;
+  --background: #ffffff;
+  --foreground: #000000;
+  --surface: #fafafa;
+  --surface-secondary: #f3f3f3;
+  --border: #e8e8e8;
+  --border-strong: #d6d6d6;
+  --muted: #666666;
 }
 
 @theme inline {
@@ -12,15 +17,31 @@
   --font-mono: var(--font-geist-mono);
 }
 
+* {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html {
+  background: var(--background);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  letter-spacing: 0;
 }
 
 button,
 a,
 select {
   -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease,
+    border-color 120ms ease,
+    opacity 120ms ease;
 }
 
 button:not(:disabled),
@@ -29,7 +50,55 @@ select {
   cursor: pointer;
 }
 
+button:hover:not(:disabled),
+a:hover {
+  border-color: #000000;
+}
+
+input,
+select,
+textarea {
+  min-height: 56px;
+  border: 1px solid var(--border);
+  background: var(--surface-secondary);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #000000;
+  outline: none;
+}
+
 :focus-visible {
-  outline: 3px solid rgb(23 89 74 / 35%);
-  outline-offset: 2px;
+  outline: 2px solid #000000;
+  outline-offset: 3px;
+}
+
+::selection {
+  background: #000000;
+  color: #ffffff;
+}
+
+.fs-caption {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.fs-action {
+  min-height: 52px;
+  border: 1px solid #000000;
+  padding-inline: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fs-grid-panel {
+  border: 1px solid var(--border);
+  background: #ffffff;
+  box-shadow: none;
 }

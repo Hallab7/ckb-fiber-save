@@ -17,7 +17,7 @@ export function ConnectWalletButton({ address }: ConnectWalletButtonProps) {
       <button
         type="button"
         onClick={() => disconnect()}
-        className="inline-flex h-10 max-w-[180px] items-center gap-2 rounded-md bg-[#111827] px-4 text-sm font-medium text-white"
+        className="inline-flex h-12 max-w-[220px] items-center gap-2 border border-black bg-black px-5 text-xs font-semibold uppercase tracking-[0.08em] text-white hover:bg-white hover:text-black"
         title={address}
       >
         <LogOut size={16} aria-hidden="true" />
@@ -30,7 +30,7 @@ export function ConnectWalletButton({ address }: ConnectWalletButtonProps) {
     <button
       type="button"
       onClick={() => open()}
-      className="inline-flex h-10 items-center gap-2 rounded-md bg-[#111827] px-4 text-sm font-medium text-white"
+      className="inline-flex h-12 items-center gap-2 border border-black bg-black px-5 text-xs font-semibold uppercase tracking-[0.08em] text-white hover:bg-white hover:text-black"
     >
       <Wallet size={16} aria-hidden="true" />
       {wallet ? "Select Account" : "Connect"}

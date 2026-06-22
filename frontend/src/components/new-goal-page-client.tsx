@@ -92,9 +92,9 @@ export function NewGoalPageClient() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f4ee] px-5 py-6 text-[#111827] sm:px-8">
+    <main className="min-h-screen bg-white px-5 py-6 text-black sm:px-8">
       <section className="mx-auto max-w-3xl">
-        <header className="flex items-center justify-between border-b border-[#d9d2c4] pb-5">
+        <header className="flex items-center justify-between border-b border-[#e8e8e8] pb-5">
           <Link href="/goals" className="text-lg font-semibold">
             FiberSave
           </Link>
@@ -102,19 +102,19 @@ export function NewGoalPageClient() {
         </header>
 
         <div className="mt-8">
-          <p className="text-sm font-medium uppercase tracking-wide text-[#17594a]">
+          <p className="text-sm font-medium uppercase tracking-wide text-black">
             Create goal
           </p>
           <h1 className="mt-2 text-3xl font-semibold">New savings goal</h1>
         </div>
 
-        <form onSubmit={onSubmit} className="mt-6 rounded-lg border border-[#d9d2c4] bg-white p-5 shadow-sm">
+        <form onSubmit={onSubmit} className="mt-6 rounded-lg border border-[#e8e8e8] bg-white p-5 shadow-sm">
           <label className="block">
             <span className="text-sm font-medium">Goal name</span>
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] px-3 outline-none focus:border-[#17594a]"
+              className="mt-2 h-11 w-full rounded-md border border-[#e8e8e8] px-3 outline-none focus:border-black"
               placeholder="School fees"
             />
           </label>
@@ -125,7 +125,7 @@ export function NewGoalPageClient() {
               <select
                 value={asset}
                 onChange={(event) => setAsset(event.target.value as AssetType)}
-                className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] bg-white px-3 outline-none focus:border-[#17594a]"
+                className="mt-2 h-11 w-full rounded-md border border-[#e8e8e8] bg-white px-3 outline-none focus:border-black"
               >
                 {assetOptions.map((option) => (
                   <option key={option} value={option}>
@@ -140,7 +140,7 @@ export function NewGoalPageClient() {
               <input
                 value={targetAmount}
                 onChange={(event) => setTargetAmount(event.target.value)}
-                className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] px-3 outline-none focus:border-[#17594a]"
+                className="mt-2 h-11 w-full rounded-md border border-[#e8e8e8] px-3 outline-none focus:border-black"
                 inputMode="decimal"
                 placeholder="1000"
               />
@@ -152,7 +152,7 @@ export function NewGoalPageClient() {
             <input
               value={targetDate}
               onChange={(event) => setTargetDate(event.target.value)}
-              className="mt-2 h-11 w-full rounded-md border border-[#d9d2c4] px-3 outline-none focus:border-[#17594a]"
+              className="mt-2 h-11 w-full rounded-md border border-[#e8e8e8] px-3 outline-none focus:border-black"
               type="date"
             />
           </label>
@@ -162,13 +162,13 @@ export function NewGoalPageClient() {
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <button
               type="submit"
-              className="inline-flex h-11 items-center justify-center rounded-md bg-[#17594a] px-5 text-sm font-medium text-white"
+              className="inline-flex h-11 items-center justify-center rounded-md bg-black px-5 text-sm font-medium text-white"
             >
               Create Goal
             </button>
             <Link
               href="/goals"
-              className="inline-flex h-11 items-center justify-center rounded-md border border-[#d9d2c4] px-5 text-sm font-medium text-[#374151]"
+              className="inline-flex h-11 items-center justify-center rounded-md border border-[#e8e8e8] px-5 text-sm font-medium text-[#222222]"
             >
               Cancel
             </Link>

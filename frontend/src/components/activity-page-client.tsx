@@ -60,9 +60,9 @@ export function ActivityPageClient() {
   }, [events, filter]);
 
   return (
-    <main className="min-h-screen bg-[#f7f4ee] px-5 py-6 text-[#111827] sm:px-8">
+    <main className="min-h-screen bg-white px-5 py-6 text-black sm:px-8">
       <section className="mx-auto max-w-5xl">
-        <header className="flex items-center justify-between border-b border-[#d9d2c4] pb-5">
+        <header className="flex items-center justify-between border-b border-[#e8e8e8] pb-5">
           <Link href="/" className="text-lg font-semibold">
             FiberSave
           </Link>
@@ -70,7 +70,7 @@ export function ActivityPageClient() {
         </header>
 
         <div className="mt-8">
-          <p className="text-sm font-medium uppercase tracking-wide text-[#17594a]">
+          <p className="text-sm font-medium uppercase tracking-wide text-black">
             Activity
           </p>
           <h1 className="mt-2 text-3xl font-semibold">Wallet activity</h1>
@@ -84,8 +84,8 @@ export function ActivityPageClient() {
               onClick={() => setFilter(item)}
               className={`h-9 rounded-md px-3 text-sm font-medium ${
                 filter === item
-                  ? "bg-[#17594a] text-white"
-                  : "border border-[#d9d2c4] bg-white text-[#374151]"
+                  ? "bg-black text-white"
+                  : "border border-[#e8e8e8] bg-white text-[#222222]"
               }`}
             >
               {item}
@@ -93,16 +93,16 @@ export function ActivityPageClient() {
           ))}
         </div>
 
-        <div className="mt-6 overflow-hidden rounded-lg border border-[#d9d2c4] bg-white shadow-sm">
+        <div className="mt-6 overflow-hidden rounded-lg border border-[#e8e8e8] bg-white shadow-sm">
           {filteredEvents.length === 0 ? (
-            <div className="p-6 text-[#6b7280]">No activity to show.</div>
+            <div className="p-6 text-[#666666]">No activity to show.</div>
           ) : (
             <ul className="divide-y divide-[#ece5d8]">
               {filteredEvents.map((event) => (
                 <li key={event.id} className="grid gap-2 p-4 sm:grid-cols-[1fr_auto]">
                   <div>
                     <p className="font-medium">{event.description}</p>
-                    <p className="mt-1 text-sm text-[#6b7280]">
+                    <p className="mt-1 text-sm text-[#666666]">
                       {event.amount ? formatAssetAmount(event.amount, event.asset) : event.asset} - {new Date(event.createdAt).toLocaleString()}
                     </p>
                     {event.txHash ? (
@@ -110,7 +110,7 @@ export function ActivityPageClient() {
                         href={getCkbExplorerTransactionUrl(event.txHash)}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-1 inline-block text-sm font-medium text-[#17594a] underline"
+                        className="mt-1 inline-block text-sm font-medium text-black underline"
                       >
                         View on CKB Explorer
                       </a>
@@ -122,7 +122,7 @@ export function ActivityPageClient() {
                         ? "bg-[#fef3f2] text-[#b42318]"
                         : event.status === "pending"
                           ? "bg-[#fff7e6] text-[#9a6700]"
-                          : "bg-[#edf7f3] text-[#17594a]"
+                          : "bg-[#f3f3f3] text-black"
                     }`}
                   >
                     {event.status}

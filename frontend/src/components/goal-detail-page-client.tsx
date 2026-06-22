@@ -173,9 +173,9 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
   const progress = goal ? getGoalProgress(goal.assignedAmount, goal.targetAmount) : 0;
 
   return (
-    <main className="min-h-screen bg-[#f7f4ee] px-5 py-6 text-[#111827] sm:px-8">
+    <main className="min-h-screen bg-white px-5 py-6 text-black sm:px-8">
       <section className="mx-auto max-w-4xl">
-        <header className="flex items-center justify-between border-b border-[#d9d2c4] pb-5">
+        <header className="flex items-center justify-between border-b border-[#e8e8e8] pb-5">
           <Link href="/goals" className="text-lg font-semibold">
             FiberSave
           </Link>
@@ -183,80 +183,80 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
         </header>
 
         {!goal ? (
-          <div className="mt-8 rounded-lg border border-[#d9d2c4] bg-white p-6">
+          <div className="mt-8 rounded-lg border border-[#e8e8e8] bg-white p-6">
             <h1 className="text-2xl font-semibold">Goal not found</h1>
-            <p className="mt-2 text-[#6b7280]">
+            <p className="mt-2 text-[#666666]">
               This goal may not exist in local metadata for this browser.
             </p>
           </div>
         ) : (
           <div className="mt-8 space-y-5">
-            <div className="rounded-lg border border-[#d9d2c4] bg-white p-5 shadow-sm">
+            <div className="rounded-lg border border-[#e8e8e8] bg-white p-5 shadow-sm">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <p className="text-sm font-medium uppercase tracking-wide text-[#17594a]">
+                  <p className="text-sm font-medium uppercase tracking-wide text-black">
                     Goal detail
                   </p>
                   <h1 className="mt-2 text-3xl font-semibold">{goal.name}</h1>
-                  <p className="mt-2 text-[#6b7280]">
+                  <p className="mt-2 text-[#666666]">
                     {formatAssetAmount(goal.assignedAmount, goal.asset)} assigned
                     toward {formatAssetAmount(goal.targetAmount, goal.asset)}
                   </p>
                 </div>
-                <span className="w-fit rounded-md bg-[#edf7f3] px-3 py-1 text-sm font-medium text-[#17594a]">
+                <span className="w-fit rounded-md bg-[#f3f3f3] px-3 py-1 text-sm font-medium text-black">
                   {goal.status}
                 </span>
               </div>
 
-              <div className="mt-6 h-3 overflow-hidden rounded-full bg-[#ebe4d8]">
+              <div className="mt-6 h-3 overflow-hidden rounded-full bg-[#e8e8e8]">
                 <div
-                  className="h-full rounded-full bg-[#17594a]"
+                  className="h-full rounded-full bg-black"
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <p className="mt-2 text-sm text-[#6b6254]">{progress.toFixed(1)}% complete</p>
+              <p className="mt-2 text-sm text-[#666666]">{progress.toFixed(1)}% complete</p>
             </div>
 
-            <div className="rounded-lg border border-[#d9d2c4] bg-white p-5">
+            <div className="rounded-lg border border-[#e8e8e8] bg-white p-5">
               <h2 className="text-lg font-semibold">Assignment controls</h2>
-              <p className="mt-2 text-sm text-[#6b7280]">
+              <p className="mt-2 text-sm text-[#666666]">
                 These controls update goal metadata only. They do not lock,
                 transfer, or spend wallet funds.
               </p>
-              <p className="mt-2 text-sm font-medium text-[#374151]">
+              <p className="mt-2 text-sm font-medium text-[#222222]">
                 Available wallet balance: {formatAssetAmount(availableAmount, goal.asset)}
               </p>
 
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <form onSubmit={onAssign} className="rounded-md border border-[#e4dccd] p-4">
+                <form onSubmit={onAssign} className="rounded-md border border-[#e8e8e8] p-4">
                   <label className="block">
                     <span className="text-sm font-medium">Assign amount</span>
                     <input
                       value={assignAmount}
                       onChange={(event) => setAssignAmount(event.target.value)}
-                      className="mt-2 h-10 w-full rounded-md border border-[#d9d2c4] px-3 outline-none focus:border-[#17594a]"
+                      className="mt-2 h-10 w-full rounded-md border border-[#e8e8e8] px-3 outline-none focus:border-black"
                       inputMode="decimal"
                       placeholder="100"
                     />
                   </label>
-                  <button className="mt-3 inline-flex h-10 items-center gap-2 rounded-md bg-[#17594a] px-4 text-sm font-medium text-white">
+                  <button className="mt-3 inline-flex h-10 items-center gap-2 rounded-md bg-black px-4 text-sm font-medium text-white">
                     <ArrowDownLeft size={16} aria-hidden="true" />
                     Assign
                   </button>
                 </form>
 
-                <form onSubmit={onRemove} className="rounded-md border border-[#e4dccd] p-4">
+                <form onSubmit={onRemove} className="rounded-md border border-[#e8e8e8] p-4">
                   <label className="block">
                     <span className="text-sm font-medium">Remove amount</span>
                     <input
                       value={removeAmount}
                       onChange={(event) => setRemoveAmount(event.target.value)}
-                      className="mt-2 h-10 w-full rounded-md border border-[#d9d2c4] px-3 outline-none focus:border-[#17594a]"
+                      className="mt-2 h-10 w-full rounded-md border border-[#e8e8e8] px-3 outline-none focus:border-black"
                       inputMode="decimal"
                       placeholder="50"
                     />
                   </label>
-                  <button className="mt-3 inline-flex h-10 items-center gap-2 rounded-md border border-[#d9d2c4] px-4 text-sm font-medium text-[#374151]">
+                  <button className="mt-3 inline-flex h-10 items-center gap-2 rounded-md border border-[#e8e8e8] px-4 text-sm font-medium text-[#222222]">
                     <ArrowUpRight size={16} aria-hidden="true" />
                     Remove
                   </button>
@@ -269,7 +269,7 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
             <button
               type="button"
               onClick={() => void onArchive()}
-              className="inline-flex h-10 items-center gap-2 rounded-md border border-[#d9d2c4] bg-white px-4 text-sm font-medium text-[#374151]"
+              className="inline-flex h-10 items-center gap-2 rounded-md border border-[#e8e8e8] bg-white px-4 text-sm font-medium text-[#222222]"
             >
               <Archive size={16} aria-hidden="true" />
               Archive Goal
