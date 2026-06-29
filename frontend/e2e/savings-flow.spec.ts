@@ -35,6 +35,16 @@ test("creates, updates, and reviews a savings goal", async ({ page }) => {
   await expect(page.getByText("School Fees")).toBeVisible();
   await expect(page.getByText("40 CKB of 100 CKB")).toBeVisible();
 
+  await page.getByRole("button", { name: "Toggle color theme" }).click();
+  await expect(page.getByTestId("goal-progress-track")).toHaveCSS(
+    "background-color",
+    "rgb(47, 47, 47)",
+  );
+  await expect(page.getByTestId("goal-progress-fill")).toHaveCSS(
+    "background-color",
+    "rgb(245, 245, 245)",
+  );
+
   await page.getByText("School Fees").click();
   await page.getByLabel("Remove amount").fill("10");
   await page.getByRole("button", { name: "Remove" }).click();

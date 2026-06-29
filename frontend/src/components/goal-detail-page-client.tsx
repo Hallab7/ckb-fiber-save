@@ -208,9 +208,9 @@ export function GoalDetailPageClient({ goalId }: GoalDetailPageClientProps) {
                 </span>
               </div>
 
-              <div className="mt-6 h-3 overflow-hidden rounded-full bg-[#e8e8e8]">
+              <div className="fs-progress-track mt-6 h-3 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-black"
+                  className="fs-progress-fill h-full"
                   style={{ width: `${progress}%` }}
                 />
               </div>

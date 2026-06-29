@@ -29,9 +29,13 @@ export function GoalCard({ goal }: GoalCardProps) {
         </span>
       </div>
 
-      <div className="mt-10 h-1 overflow-hidden bg-[#e8e8e8]">
+      <div
+        className="fs-progress-track mt-10 h-1 overflow-hidden"
+        data-testid="goal-progress-track"
+      >
         <div
-          className="h-full bg-black"
+          className="fs-progress-fill h-full"
+          data-testid="goal-progress-fill"
           style={{ width: `${progress}%` }}
         />
       </div>

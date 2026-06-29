@@ -115,6 +115,14 @@ textarea:focus {
   box-shadow: none;
 }
 
+.fs-progress-track {
+  background: #e8e8e8;
+}
+
+.fs-progress-fill {
+  background: #000000;
+}
+
 .theme-icon-dark {
   display: none;
 }
@@ -125,6 +133,14 @@ textarea:focus {
 
 :root[data-theme="dark"] .theme-icon-dark {
   display: block;
+}
+
+:root[data-theme="dark"] .fs-progress-track {
+  background: #2f2f2f;
+}
+
+:root[data-theme="dark"] .fs-progress-fill {
+  background: #f5f5f5;
 }
 
 :root[data-theme="dark"] .bg-white {
