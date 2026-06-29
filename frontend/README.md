@@ -23,9 +23,10 @@ preferences locally in the browser.
 
 RGB++ stable assets and BTC are interface placeholders and cannot be withdrawn
 in this phase.
-Fiber remittance runs in deterministic mock mode when `FIBER_RPC_URL` is empty.
-Set `FIBER_RPC_URL` to a trusted local Fiber node RPC endpoint for live node
-testing.
+Fiber remittance runs in deterministic mock mode when no Fiber RPC URL is set.
+For live local testing, set `FIBER_SEND_RPC_URL` to the sender node and
+`FIBER_RECEIVE_RPC_URL` to the receiver node. `FIBER_RPC_URL` remains a fallback
+when one node is used for both roles.
 
 ## Getting Started
 

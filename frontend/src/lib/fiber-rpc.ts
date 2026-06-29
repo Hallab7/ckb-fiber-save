@@ -38,7 +38,15 @@ type PaymentRequestInput = {
 
 const DEFAULT_EXPIRY_SECONDS = 3_600;
 
-function getFiberRpcUrl() {
+function getFiberRpcUrl(role: "send" | "receive" | "default" = "default") {
+  if (role === "send") {
+    return process.env.FIBER_SEND_RPC_URL?.trim() || process.env.FIBER_RPC_URL?.trim() || null;
+  }
+
+  if (role === "receive") {
+    return process.env.FIBER_RECEIVE_RPC_URL?.trim() || process.env.FIBER_RPC_URL?.trim() || null;
+  }
+
   return process.env.FIBER_RPC_URL?.trim() || null;
 }
 
@@ -60,8 +68,12 @@ function assertCkbAsset(asset: AssetType) {
   }
 }
 
-async function callFiberRpc<T>(method: string, params: Record<string, unknown>) {
-  const url = getFiberRpcUrl();
+async function callFiberRpc<T>(
+  method: string,
+  params: Record<string, unknown>,
+  role: "send" | "receive" | "default" = "default",
+) {
+  const url = getFiberRpcUrl(role);
 
   if (!url) {
     throw new Error("FIBER_RPC_URL is not configured.");
@@ -127,7 +139,7 @@ export async function createPaymentRequest(
   const expirySeconds = input.expirySeconds || DEFAULT_EXPIRY_SECONDS;
   const expiresAt = Date.now() + expirySeconds * 1_000;
 
-  if (!getFiberRpcUrl()) {
+  if (!getFiberRpcUrl("receive")) {
     const paymentHash = mockPaymentHash(`${input.amount}:${input.description}:${expiresAt}`);
 
     return {
@@ -149,7 +161,7 @@ export async function createPaymentRequest(
     expiry: toHexQuantity(expirySeconds),
     payment_preimage: paymentPreimage,
     hash_algorithm: "sha256",
-  });
+  }, "receive");
   const paymentHash = result.invoice.data?.payment_hash;
 
   if (!paymentHash) {
@@ -184,13 +196,13 @@ export async function getPaymentStatus(paymentHash: string): Promise<FiberPaymen
     throw new Error("Payment hash is required.");
   }
 
-  if (!getFiberRpcUrl()) {
+  if (!getFiberRpcUrl("send")) {
     return "pending";
   }
 
   const result = await callFiberRpc<FiberPaymentResponse>("get_payment", {
     payment_hash: paymentHash.trim(),
-  });
+  }, "send");
 
   return normalizePaymentStatus(result.status);
 }
@@ -200,13 +212,13 @@ export async function getInvoiceStatus(paymentHash: string): Promise<FiberPaymen
     throw new Error("Payment hash is required.");
   }
 
-  if (!getFiberRpcUrl()) {
+  if (!getFiberRpcUrl("receive")) {
     return "pending";
   }
 
   const result = await callFiberRpc<FiberInvoiceResponse>("get_invoice", {
     payment_hash: paymentHash.trim(),
-  });
+  }, "receive");
 
   return normalizeInvoiceStatus(result.status);
 }
@@ -221,14 +233,14 @@ export async function sendPayment(invoiceAddress: string): Promise<{
     throw new Error("Fiber invoice is required.");
   }
 
-  if (!getFiberRpcUrl()) {
+  if (!getFiberRpcUrl("send")) {
     const paymentHash = mockPaymentHash(invoice);
     return { paymentHash, status: "pending" };
   }
 
   const result = await callFiberRpc<FiberPaymentResponse>("send_payment", {
     invoice,
-  });
+  }, "send");
 
   return {
     paymentHash: result.payment_hash,

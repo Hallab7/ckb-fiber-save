@@ -63,9 +63,11 @@ The first implementation should use interfaces for goal and activity storage. Lo
 ## Fiber Architecture
 
 Fiber remittance uses a server-side Fiber RPC wrapper so node URLs and
-credentials are not exposed in browser code. When `FIBER_RPC_URL` is empty, the
-wrapper returns deterministic mock responses so local product demos and
-automated tests can run without node channels and liquidity.
+credentials are not exposed in browser code. `FIBER_SEND_RPC_URL` can point to a
+sender node and `FIBER_RECEIVE_RPC_URL` can point to a receiver node;
+`FIBER_RPC_URL` remains a fallback for single-node demos. When no Fiber RPC URL
+is configured, the wrapper returns deterministic mock responses so local product
+demos and automated tests can run without node channels and liquidity.
 
 Live Fiber operation requires a configured Fiber node, connected peers, open
 channels, and enough route liquidity before invoices can settle.

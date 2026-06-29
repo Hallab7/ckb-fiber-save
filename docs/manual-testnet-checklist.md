@@ -40,7 +40,8 @@ Run this checklist with a funded CKB testnet wallet before a public demo.
 
 ## Fiber Remittance
 
-- [ ] `FIBER_RPC_URL` points to a trusted local or private Fiber RPC endpoint.
+- [ ] `FIBER_SEND_RPC_URL` points to the sender Fiber RPC endpoint.
+- [ ] `FIBER_RECEIVE_RPC_URL` points to the receiver Fiber RPC endpoint.
 - [ ] Sender and receiver nodes are funded and connected to peers.
 - [ ] Required Fiber channels are open and ready.
 - [ ] Route liquidity is sufficient for the test payment.
