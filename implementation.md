@@ -579,7 +579,11 @@ Demo script:
 
 ## Phase 6 - Fiber Remittance Milestone
 
-This phase begins after the savings MVP is working.
+Implementation status: server-side Fiber RPC wrapper, payment-request API
+routes, send/receive pages, QR invoice display, activity integration, mock-mode
+browser tests, and environment documentation are implemented. Live Fiber node
+verification remains an operator task because it requires configured channels
+and liquidity.
 
 ### Step 6.1 - Run Fiber Node
 
@@ -604,7 +608,7 @@ FIBER_NODE_PUBKEY=<node_pubkey>
 
 ### Step 6.2 - Fiber RPC Client
 
-File: `frontend/lib/fiber-rpc.ts` or server-side `server/fiber-rpc.ts`
+File: `frontend/src/lib/fiber-rpc.ts`
 
 ```typescript
 export async function getNodeInfo(): Promise<unknown>
@@ -640,19 +644,19 @@ POST /api/send-payment
 Implementation notes:
 
 - Keep Fiber RPC URL server-side.
-- Store payment request metadata.
-- Poll payment status from frontend.
+- Store remittance metadata as local activity events for the MVP.
+- Poll payment status from frontend through the server-side API.
 - Add remittance events to activity history.
+- Use deterministic mock mode when `FIBER_RPC_URL` is empty so demos and tests
+  do not require a running Fiber node.
 
 ### Step 6.4 - Send Money Page
 
-File: `frontend/app/send/page.tsx`
+File: `frontend/src/app/send/page.tsx`
 
 Fields:
 
-- Recipient or invoice
-- Amount
-- Asset
+- Fiber invoice
 - Note
 
 States:
@@ -667,13 +671,13 @@ States:
 
 ### Step 6.5 - Receive Payment Page
 
-File: `frontend/app/receive/page.tsx`
+File: `frontend/src/app/receive/page.tsx`
 
 Features:
 
 - Generate payment request
 - Show QR code
-- Copy payment link
+- Copy payment invoice
 - Show expiry time
 - Show payment status
 

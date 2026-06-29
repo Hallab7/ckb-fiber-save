@@ -8,7 +8,9 @@ import {
   ArrowUpRight,
   History,
   Menu,
+  QrCode,
   RefreshCw,
+  Send,
   Settings,
   ShieldCheck,
 } from "lucide-react";
@@ -107,6 +109,8 @@ export function FiberSaveDashboard() {
             <Link href="/goals">Goals</Link>
             <Link href="/deposit">Deposit</Link>
             <Link href="/withdraw">Transfer</Link>
+            <Link href="/send">Send</Link>
+            <Link href="/receive">Receive</Link>
             <Link href="/activity">Activity</Link>
           </div>
           <div className="ml-auto hidden sm:block">
@@ -253,6 +257,12 @@ export function FiberSaveDashboard() {
                 </Link>
                 <Link href="/withdraw" className="fs-action inline-flex items-center gap-3 bg-white text-black">
                   <ArrowUpRight size={16} /> Transfer
+                </Link>
+                <Link href="/send" className="fs-action inline-flex items-center gap-3 bg-white text-black">
+                  <Send size={16} /> Send
+                </Link>
+                <Link href="/receive" className="fs-action inline-flex items-center gap-3 bg-white text-black">
+                  <QrCode size={16} /> Receive
                 </Link>
                 <Link href="/activity" className="fs-action inline-flex items-center gap-3 bg-white text-black">
                   <History size={16} /> Activity

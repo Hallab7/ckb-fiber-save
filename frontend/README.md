@@ -4,7 +4,7 @@ FiberSave is a non-custodial CKB testnet savings MVP. Wallet connectors control
 signing and funds; the application stores savings goals, activity records, and
 preferences locally in the browser.
 
-## Phase 5 Capabilities
+## Current Capabilities
 
 - Connect a CCC-compatible wallet and read its CKB testnet balance.
 - Create savings goals and assign available wallet balance as metadata.
@@ -18,9 +18,14 @@ preferences locally in the browser.
 - Reject goal assignments that exceed the available wallet balance.
 - Run unit tests for goals, activity, and balance helpers.
 - Run desktop and mobile browser flows with an opt-in demo wallet.
+- Generate CKB Fiber payment requests through server-side API routes.
+- Submit CKB Fiber invoices for remittance status tracking.
 
 RGB++ stable assets and BTC are interface placeholders and cannot be withdrawn
 in this phase.
+Fiber remittance runs in deterministic mock mode when `FIBER_RPC_URL` is empty.
+Set `FIBER_RPC_URL` to a trusted local Fiber node RPC endpoint for live node
+testing.
 
 ## Getting Started
 

@@ -1,6 +1,6 @@
 export type AssetType = "CKB" | "BTC" | "RGB_STABLE";
 
-export type ActivityStatus = "pending" | "complete" | "failed";
+export type ActivityStatus = "pending" | "complete" | "failed" | "expired";
 
 export type ActivityType =
   | "deposit"
@@ -47,4 +47,16 @@ export interface ActivityEvent {
   txHash?: string;
   description: string;
   createdAt: string;
+}
+
+export type FiberPaymentStatus = "pending" | "paid" | "expired" | "failed";
+
+export interface FiberPaymentRequest {
+  paymentHash: string;
+  invoiceAddress: string;
+  amount: string;
+  asset: AssetType;
+  description: string;
+  expiresAt: number;
+  status: FiberPaymentStatus;
 }

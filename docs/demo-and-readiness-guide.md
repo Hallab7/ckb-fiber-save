@@ -12,6 +12,7 @@ and whether the application is ready for a demo or production use.
 |------|--------|-------|
 | Local product demo | Ready | Automated desktop and mobile flows pass |
 | CKB testnet demo | Conditionally ready | Requires a funded wallet and a successful manual rehearsal |
+| Fiber remittance demo | Mock ready | Live Fiber settlement requires configured nodes, channels, and liquidity |
 | Funding presentation | Ready | Product scope, implementation phases, and demo narrative are documented |
 | Public testnet deployment | Nearly ready | Deploy after completing the manual checklist on the selected wallet |
 | Mainnet production | Not ready | Security, persistence, monitoring, indexing, and operational work remain |
@@ -42,6 +43,8 @@ The MVP demonstrates:
 - Wallet deposit address and QR code
 - Balance-delta deposit detection
 - Native CKB withdrawal construction and broadcast
+- Fiber payment request generation in mock mode
+- Fiber invoice submission and remittance activity tracking in mock mode
 - Pending, completed, and failed transaction states
 - CKB Explorer transaction links
 - Local wallet activity history
@@ -50,7 +53,7 @@ The MVP demonstrates:
 
 The MVP does not yet demonstrate:
 
-- Fiber Network payments
+- Live Fiber Network settlement
 - RGB++ stable-asset transfers
 - BTC transfers
 - Cross-device metadata synchronization
@@ -140,7 +143,7 @@ Expected result:
 
 - ESLint passes
 - 10 unit tests pass
-- 4 Playwright desktop/mobile flows pass
+- 10 Playwright desktop/mobile flows pass
 - Next.js production build completes
 
 Then complete the manual testnet checklist:
@@ -237,9 +240,10 @@ Show:
 
 ### 8. Close with the Roadmap
 
-Explain that the current MVP proves the personal savings foundation. The next
-funded milestone adds Fiber invoices, payment requests, QR payments, instant
-remittance, and payment-state tracking.
+Explain that the current MVP proves the personal savings foundation and now
+includes a mock-safe Fiber remittance interface. The next funded milestone is
+live Fiber node rehearsal with channels, liquidity, and payment-state tracking
+against a configured node.
 
 The shorter presentation version is available in
 [`demo-script.md`](./demo-script.md).
@@ -400,15 +404,16 @@ Required production work:
 5. Add error monitoring to the deployed frontend.
 6. Add a visible testnet indicator on every transaction screen.
 
-### Next Product Milestone: Phase 6 Fiber Remittance
+### Immediate Product Milestone: Live Phase 6 Fiber Rehearsal
 
-Implement:
+Validate:
 
 - Fiber node setup
-- Server-side Fiber RPC client
-- Payment request generation
-- Send-payment flow
-- Receive-payment QR code
+- Channel setup and route liquidity
+- Server-side Fiber RPC credentials
+- Payment request generation against a live node
+- Send-payment flow against a live node
+- Receive-payment QR code scanning
 - Invoice expiry
 - Pending, paid, expired, and failed states
 - Remittance activity history

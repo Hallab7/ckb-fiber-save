@@ -38,6 +38,18 @@ Run this checklist with a funded CKB testnet wallet before a public demo.
 - [ ] Explorer link opens the correct transaction.
 - [ ] Activity moves from pending to complete after confirmation.
 
+## Fiber Remittance
+
+- [ ] `FIBER_RPC_URL` points to a trusted local or private Fiber RPC endpoint.
+- [ ] Sender and receiver nodes are funded and connected to peers.
+- [ ] Required Fiber channels are open and ready.
+- [ ] Route liquidity is sufficient for the test payment.
+- [ ] Receive page generates a valid Fiber invoice.
+- [ ] Invoice QR scans to the same invoice text.
+- [ ] Send page submits the invoice successfully.
+- [ ] Payment status moves from pending to paid, expired, or failed.
+- [ ] Remittance event appears in Activity.
+
 ## Responsive Review
 
 - [ ] Dashboard works at 390px width.

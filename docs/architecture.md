@@ -9,6 +9,7 @@ Frontend
   - Dashboard
   - Savings goals
   - Deposit and withdrawal screens
+  - Fiber send and receive screens
   - Activity history
   - Settings
 
@@ -30,7 +31,9 @@ CKB Layer
   - Transaction broadcast
   - Explorer references
 
-Future Fiber Layer
+Fiber Layer
+  - Server-side RPC wrapper
+  - Payment request API routes
   - Payment requests
   - Payment route status
   - Instant remittance
@@ -57,8 +60,16 @@ All fund movement must use wallet signing. Any future backend must be unable to 
 
 The first implementation should use interfaces for goal and activity storage. Local storage is acceptable for the first prototype. A backend can later replace the storage implementation without changing page-level code.
 
-## Future Architecture Additions
+## Fiber Architecture
 
-Fiber remittance should be added through a server-side Fiber RPC wrapper so node URLs and credentials are not exposed in browser code.
+Fiber remittance uses a server-side Fiber RPC wrapper so node URLs and
+credentials are not exposed in browser code. When `FIBER_RPC_URL` is empty, the
+wrapper returns deterministic mock responses so local product demos and
+automated tests can run without node channels and liquidity.
+
+Live Fiber operation requires a configured Fiber node, connected peers, open
+channels, and enough route liquidity before invoices can settle.
+
+## Future Architecture Additions
 
 Savings circles should begin as app-tracked metadata and only move to script-enforced state after contribution, payout, missed-payment, and dispute rules are finalized.

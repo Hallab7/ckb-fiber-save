@@ -11,9 +11,16 @@ import { formatAssetAmount } from "@/lib/format";
 import { getConnectedAddress } from "@/lib/wallet";
 import type { ActivityEvent } from "@/types/fibersave";
 
-type ActivityFilter = "all" | "deposits" | "withdrawals" | "goals" | "pending";
+type ActivityFilter = "all" | "deposits" | "withdrawals" | "remittances" | "goals" | "pending";
 
-const filters: ActivityFilter[] = ["all", "deposits", "withdrawals", "goals", "pending"];
+const filters: ActivityFilter[] = [
+  "all",
+  "deposits",
+  "withdrawals",
+  "remittances",
+  "goals",
+  "pending",
+];
 
 export function ActivityPageClient() {
   const signer = useSigner();
@@ -53,6 +60,7 @@ export function ActivityPageClient() {
       if (filter === "all") return true;
       if (filter === "deposits") return event.type === "deposit";
       if (filter === "withdrawals") return event.type === "withdrawal";
+      if (filter === "remittances") return event.type === "remittance";
       if (filter === "goals") return event.type.startsWith("goal_");
       if (filter === "pending") return event.status === "pending";
       return true;
@@ -120,6 +128,8 @@ export function ActivityPageClient() {
                     className={`h-fit w-fit rounded-md px-2 py-1 text-xs font-medium ${
                       event.status === "failed"
                         ? "bg-[#fef3f2] text-[#b42318]"
+                        : event.status === "expired"
+                          ? "bg-[#f3f3f3] text-[#555555]"
                         : event.status === "pending"
                           ? "bg-[#fff7e6] text-[#9a6700]"
                           : "bg-[#f3f3f3] text-black"

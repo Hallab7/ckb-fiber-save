@@ -71,6 +71,34 @@ test("renders the demo-wallet dashboard and deposit state", async ({ page }) => 
   await expect(page.getByRole("button", { name: "Copy Address" })).toBeVisible();
 });
 
+test("creates and checks a Fiber payment request", async ({ page }) => {
+  await page.goto("/receive");
+  await expect(page.getByRole("heading", { name: "Receive payment" })).toBeVisible();
+
+  await page.getByLabel("Amount").fill("1");
+  await page.getByLabel("Description").fill("Family support");
+  await page.getByRole("button", { name: "Create Payment Request" }).click();
+
+  await expect(page.getByText("Payment request created.")).toBeVisible();
+  await expect(page.getByText("Status: pending")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Copy Invoice" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByText("Payment status: pending.")).toBeVisible();
+});
+
+test("submits a Fiber payment invoice", async ({ page }) => {
+  await page.goto("/send");
+  await expect(page.getByRole("heading", { name: "Send payment" })).toBeVisible();
+
+  await page.getByLabel("Fiber invoice").fill("fibt1mockinvoice");
+  await page.getByLabel("Note").fill("Test remittance");
+  await page.getByRole("button", { name: "Send Fiber Payment" }).click();
+
+  await expect(page.getByText("Fiber payment submitted. Status is pending.")).toBeVisible();
+  await expect(page.getByText("Payment hash:")).toBeVisible();
+});
+
 test("persists dark mode across reloads", async ({ page }) => {
   await page.goto("/");
 
